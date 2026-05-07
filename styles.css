@@ -1011,6 +1011,92 @@ h1 {
   text-align: center;
 }
 
+/* Login */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  padding: 48px 40px;
+}
+
+.login-brand {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #bbb;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 32px;
+}
+
+.login-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #1c1c1c;
+  letter-spacing: -0.3px;
+  margin-bottom: 28px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-error {
+  font-size: 0.85rem;
+  color: #e05252;
+  min-height: 20px;
+}
+
+.login-btn {
+  padding: 12px 18px;
+  background: #1c1c1c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  width: 100%;
+  margin-top: 4px;
+  font-family: inherit;
+}
+
+.login-btn:hover {
+  background: #333;
+}
+
+/* Logout */
+.logout-btn {
+  margin-top: auto;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #bbb;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: color 0.15s, background 0.15s;
+}
+
+.logout-btn:hover {
+  color: #e05252;
+  background: #fef2f2;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .sidebar {
@@ -1087,6 +1173,13 @@ h1 {
     flex-shrink: 0;
     padding: 12px 0 4px !important;
     text-align: right;
+  }
+
+  .logout-btn {
+    width: auto;
+    margin-top: 0;
+    margin-left: auto;
+    padding: 6px 10px;
   }
 
   #hoy-detail-panel {

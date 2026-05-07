@@ -10,7 +10,8 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const db   = firebase.database();
+const auth = firebase.auth();
 
 // --- DOM references ---
 const form = document.getElementById('task-form');
@@ -821,11 +822,12 @@ editForm.addEventListener('submit', (e) => {
   closeEditPanel();
 });
 
-// --- Firebase real-time listeners ---
+// --- Auth + Firebase real-time listeners ---
 
-let detailReady  = false;
-let tasksReady   = false;
-let recurringDone = false;
+let detailReady      = false;
+let tasksReady       = false;
+let recurringDone    = false;
+let listenersStarted = false;
 
 function maybeSyncRecurring() {
   if (detailReady && tasksReady && !recurringDone) {
@@ -834,7 +836,11 @@ function maybeSyncRecurring() {
   }
 }
 
-db.ref('detail-tasks').on('value', (snapshot) => {
+function startFirebaseListeners() {
+  if (listenersStarted) return;
+  listenersStarted = true;
+
+  db.ref('detail-tasks').on('value', (snapshot) => {
   const data = snapshot.val();
 
   // Migrate from localStorage if Firebase is empty on first load
@@ -927,4 +933,35 @@ db.ref('tasks').on('value', (snapshot) => {
     tasksReady = true;
     maybeSyncRecurring();
   }
+  });
+}
+
+auth.onAuthStateChanged((user) => {
+  const overlay = document.getElementById('login-overlay');
+  const layout  = document.getElementById('app-layout');
+  if (user) {
+    overlay.hidden = true;
+    layout.removeAttribute('hidden');
+    startFirebaseListeners();
+  } else {
+    overlay.hidden = false;
+    layout.setAttribute('hidden', '');
+  }
+});
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email    = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  const errorEl  = document.getElementById('login-error');
+  errorEl.textContent = '';
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+  } catch {
+    errorEl.textContent = 'Email o contraseña incorrectos';
+  }
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  auth.signOut().then(() => location.reload());
 });
