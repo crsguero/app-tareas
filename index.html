@@ -9,8 +9,13 @@
 </head>
 <body>
 
+  <!-- Auth loading -->
+  <div id="auth-loading" class="auth-loading">
+    <span class="auth-loading-spinner"></span>
+  </div>
+
   <!-- Login -->
-  <div id="login-overlay" class="login-overlay">
+  <div id="login-overlay" class="login-overlay" hidden>
     <div class="login-card">
       <div class="login-brand">Tareas</div>
       <h1 class="login-title">Acceder</h1>
@@ -54,6 +59,13 @@
     </nav>
 
     <main class="content">
+
+      <button id="mobile-back-btn" class="mobile-back-btn" aria-label="Volver al menú">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Atrás
+      </button>
 
       <!-- Vista: Hoy -->
       <div id="view-hoy" class="view">

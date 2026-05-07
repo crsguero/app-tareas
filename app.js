@@ -56,7 +56,15 @@ document.querySelectorAll('.nav-item').forEach(btn => {
       activeHoyOwner = btn.dataset.owner;
       filterHoyTasks();
     }
+    if (window.innerWidth <= 600) {
+      document.getElementById('app-layout').classList.add('mobile-showing-content');
+    }
   });
+});
+
+document.getElementById('mobile-back-btn').addEventListener('click', () => {
+  document.getElementById('app-layout').classList.remove('mobile-showing-content');
+  closeHoyPanel();
 });
 
 // --- Completed section ---
@@ -632,6 +640,9 @@ function openHoyPanel(li) {
   renderHoySubtasks(subtasks, subtasksDone);
 
   hoyDetailPanel.classList.add('open');
+  if (window.innerWidth > 600) {
+    document.getElementById('task-form').style.right = '360px';
+  }
 }
 
 function renderHoySubtasks(subtasks, doneIds) {
@@ -676,6 +687,7 @@ function closeHoyPanel() {
   hoyDetailPanel.classList.remove('open');
   hoyActiveLi    = null;
   hoyActivePlanLi = null;
+  document.getElementById('task-form').style.right = '';
 }
 
 hoyPanelClose.addEventListener('click', closeHoyPanel);
@@ -937,8 +949,10 @@ db.ref('tasks').on('value', (snapshot) => {
 }
 
 auth.onAuthStateChanged((user) => {
-  const overlay = document.getElementById('login-overlay');
-  const layout  = document.getElementById('app-layout');
+  const overlay  = document.getElementById('login-overlay');
+  const layout   = document.getElementById('app-layout');
+  const loading  = document.getElementById('auth-loading');
+  loading.hidden = true;
   if (user) {
     overlay.hidden = true;
     layout.removeAttribute('hidden');
