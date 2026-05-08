@@ -33,16 +33,6 @@ const editAddSubtask     = document.getElementById('edit-add-subtask');
 let hoyActiveLi    = null;
 let hoyActivePlanLi = null;
 
-// --- Debug persistente (funciona con y sin DevTools abierto) ---
-const _dbgLog = [];
-function dbg(msg) {
-  const entry = new Date().toISOString().slice(11,23) + ' ' + msg;
-  _dbgLog.push(entry);
-  if (_dbgLog.length > 40) _dbgLog.shift();
-  try { localStorage.setItem('_appDbg', JSON.stringify(_dbgLog)); } catch(e) {}
-  console.log(entry);
-}
-// Para leer el log desde consola: JSON.parse(localStorage.getItem('_appDbg')).forEach(l=>console.log(l))
 
 const repeatLabels = { daily: 'Diariamente', weekly: 'Semanalmente', monthly: 'Mensualmente', quarterly: 'Trimestralmente', yearly: 'Anualmente', biannually: 'Cada dos años' };
 const weekdayLabels = { '0': 'Domingo', '1': 'Lunes', '2': 'Martes', '3': 'Miércoles', '4': 'Jueves', '5': 'Viernes', '6': 'Sábado' };
@@ -738,7 +728,6 @@ function openHoyPanel(li) {
   hoyActivePlanLi = planLi ?? null;
   const desc = planLi?.dataset.description ?? '';
   const checklistState = planLi?.dataset.checklistState ? JSON.parse(planLi.dataset.checklistState) : [];
-  dbg('[ABRIR] seriesId:' + seriesId + ' planLi:' + !!planLi + ' state:' + JSON.stringify(checklistState));
   const hasDesc = desc && desc !== '<p><br></p>';
   hoyQuill.clipboard.dangerouslyPasteHTML(hasDesc ? applyChecklistState(desc, checklistState) : '');
   hoyPanelDescField.hidden = false;
@@ -897,7 +886,6 @@ function _handleCheckboxToggle(e) {
     livePlanLi.dataset.checklistState = JSON.stringify(newState);
     hoyActivePlanLi = livePlanLi;
   }
-  dbg('[GUARDAR] taskId:' + taskId + ' live:' + !!livePlanLi + ' state:' + JSON.stringify(newState));
   saveDetailTasks();
 }
 
@@ -1047,9 +1035,6 @@ function startFirebaseListeners() {
   }
   if (hoyActiveLi?.dataset.seriesId) {
     hoyActivePlanLi = detailTaskList.querySelector(`[data-id="${hoyActiveLi.dataset.seriesId}"]`) ?? null;
-    const sid = hoyActiveLi.dataset.seriesId;
-    const rebuilt = detailTaskList.querySelector(`[data-id="${sid}"]`);
-    dbg('[FIREBASE] sid:' + sid + ' rebuilt:' + !!rebuilt + ' state:' + (rebuilt?.dataset.checklistState ?? 'vacío'));
   }
   updateDetailEmptyState();
   updateNavCounts();
