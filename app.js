@@ -77,6 +77,7 @@ function restoreNavState() {
   }
   if (window.innerWidth <= 600) {
     document.getElementById('app-layout').classList.add('mobile-showing-content');
+    document.querySelector('meta[name="theme-color"]').content = '#ffffff';
   }
 }
 
@@ -96,12 +97,14 @@ document.querySelectorAll('.nav-item').forEach(btn => {
     saveNavState();
     if (window.innerWidth <= 600) {
       document.getElementById('app-layout').classList.add('mobile-showing-content');
+      document.querySelector('meta[name="theme-color"]').content = '#ffffff';
     }
   });
 });
 
 document.getElementById('mobile-back-btn').addEventListener('click', () => {
   document.getElementById('app-layout').classList.remove('mobile-showing-content');
+  document.querySelector('meta[name="theme-color"]').content = '#F9F9FA';
   closeHoyPanel();
 });
 
