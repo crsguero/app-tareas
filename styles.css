@@ -228,6 +228,76 @@ body {
   margin-bottom: 32px;
 }
 
+#hoy-panel-desc-editor .ql-editor {
+  min-height: 0;
+  max-height: none;
+  overflow-y: visible;
+  padding: 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+#hoy-panel-desc-editor .ql-editor p + p {
+  margin-top: 16px;
+}
+
+#hoy-panel-desc-editor .ql-editor li + li,
+#hoy-panel-desc-editor .ql-editor ul[data-checked] + ul[data-checked] {
+  margin-top: 6px;
+}
+
+#hoy-panel-desc-editor .ql-editor p + ol,
+#hoy-panel-desc-editor .ql-editor p + ul,
+#hoy-panel-desc-editor .ql-editor ol + p,
+#hoy-panel-desc-editor .ql-editor ul + p {
+  margin-top: 16px;
+}
+
+#hoy-panel-desc-editor .ql-editor ol,
+#hoy-panel-desc-editor .ql-editor ul {
+  padding-left: 0 !important;
+}
+
+#hoy-panel-desc-editor .ql-editor ol li:not(.ql-direction-rtl),
+#hoy-panel-desc-editor .ql-editor ul li:not(.ql-direction-rtl) {
+  padding-left: 2rem !important;
+}
+
+#hoy-panel-desc-editor .ql-editor li:not(.ql-direction-rtl)::before {
+  text-align: left !important;
+}
+
+#hoy-panel-desc-editor .ql-editor ul[data-checked] > li,
+#hoy-panel-desc-editor.ql-disabled .ql-editor ul[data-checked] > li,
+#hoy-panel-desc-editor.ql-disabled .ql-editor ul[data-checked] > li::before {
+  pointer-events: all !important;
+  cursor: pointer !important;
+}
+
+#hoy-panel-desc-editor .ql-editor ul[data-checked="false"] > li::before {
+  content: '' !important;
+  display: inline-block !important;
+  width: 16px !important;
+  height: 16px !important;
+  border: 1.5px solid #000 !important;
+  border-radius: 1px !important;
+  box-sizing: border-box !important;
+  vertical-align: middle !important;
+  background: transparent !important;
+}
+
+#hoy-panel-desc-editor .ql-editor ul[data-checked="true"] > li::before {
+  content: '' !important;
+  display: inline-block !important;
+  width: 16px !important;
+  height: 16px !important;
+  border: 1.5px solid #000 !important;
+  border-radius: 1px !important;
+  box-sizing: border-box !important;
+  vertical-align: middle !important;
+  background: #000 url("data:image/svg+xml,%3Csvg viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4L3.5 6.5L9 1' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / 9px !important;
+}
+
 #hoy-panel-delete-btn {
   display: flex;
   align-items: center;

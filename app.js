@@ -43,6 +43,40 @@ function repeatDisplay(repeat, weekday) {
 
 let activeHoyOwner = 'cristina';
 
+function saveNavState() {
+  const activeBtn = document.querySelector('.nav-item.active');
+  if (activeBtn) {
+    localStorage.setItem('nav-state', JSON.stringify({
+      view: activeBtn.dataset.view,
+      owner: activeBtn.dataset.owner || null
+    }));
+  }
+}
+
+function restoreNavState() {
+  const saved = localStorage.getItem('nav-state');
+  if (!saved) return;
+  let state;
+  try { state = JSON.parse(saved); } catch { return; }
+
+  const btn = state.owner
+    ? document.querySelector(`.nav-item[data-view="${state.view}"][data-owner="${state.owner}"]`)
+    : document.querySelector(`.nav-item[data-view="${state.view}"]`);
+  if (!btn) return;
+
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.view').forEach(v => {
+    v.hidden = v.id !== `view-${state.view}`;
+  });
+  if (state.view === 'hoy' && state.owner) {
+    activeHoyOwner = state.owner;
+  }
+  if (window.innerWidth <= 600) {
+    document.getElementById('app-layout').classList.add('mobile-showing-content');
+  }
+}
+
 document.querySelectorAll('.nav-item').forEach(btn => {
   btn.addEventListener('click', () => {
     closeHoyPanel();
@@ -56,6 +90,7 @@ document.querySelectorAll('.nav-item').forEach(btn => {
       activeHoyOwner = btn.dataset.owner;
       filterHoyTasks();
     }
+    saveNavState();
     if (window.innerWidth <= 600) {
       document.getElementById('app-layout').classList.add('mobile-showing-content');
     }
@@ -161,6 +196,7 @@ function saveDetailTasks() {
     subtasks: tr.dataset.subtasks ? JSON.parse(tr.dataset.subtasks) : [],
     owner: tr.dataset.owner ?? 'cristina',
     link:  tr.dataset.link  ?? '',
+    checklistState: tr.dataset.checklistState ? JSON.parse(tr.dataset.checklistState) : [],
   }));
   db.ref('detail-tasks').set(tasks.length ? tasks : null);
 }
@@ -349,7 +385,7 @@ function buildOwnerAvatar(owner) {
   return wrap;
 }
 
-function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, category = '', description = '', subtasks = [], owner = 'cristina', link = '', save = true) {
+function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, category = '', description = '', subtasks = [], owner = 'cristina', link = '', checklistState = [], save = true) {
   const trimmed = title.trim();
   if (!trimmed) return;
 
@@ -362,6 +398,7 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   if (subtasks?.length) tr.dataset.subtasks = JSON.stringify(subtasks);
   if (owner) tr.dataset.owner = owner;
   if (link)  tr.dataset.link  = link;
+  if (checklistState?.length) tr.dataset.checklistState = JSON.stringify(checklistState);
 
   const nameCell = document.createElement('td');
   nameCell.className = 'detail-task-name-cell';
@@ -598,6 +635,16 @@ detailForm.addEventListener('submit', (e) => {
 
 // --- Panel lateral Hoy (detalle de tarea) ---
 
+function applyChecklistState(html, checklistState) {
+  if (!checklistState.length || !html) return html;
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const uls = doc.querySelectorAll('ul[data-checked]');
+  uls.forEach((ul, i) => {
+    if (i < checklistState.length) ul.dataset.checked = checklistState[i] ? 'true' : 'false';
+  });
+  return doc.body.innerHTML;
+}
+
 function openHoyPanel(li) {
   hoyActiveLi = li;
 
@@ -633,7 +680,9 @@ function openHoyPanel(li) {
   const planLi   = seriesId ? detailTaskList.querySelector(`[data-id="${seriesId}"]`) : null;
   hoyActivePlanLi = planLi ?? null;
   const desc = planLi?.dataset.description ?? '';
-  hoyQuill.clipboard.dangerouslyPasteHTML(desc);
+  const checklistState = planLi?.dataset.checklistState ? JSON.parse(planLi.dataset.checklistState) : [];
+  hoyQuill.clipboard.dangerouslyPasteHTML(applyChecklistState(desc, checklistState));
+  hoyPanelDescField.hidden = !desc || desc === '<p><br></p>';
 
   const subtasks     = planLi?.dataset.subtasks ? JSON.parse(planLi.dataset.subtasks) : [];
   const subtasksDone = li.dataset.subtasksDone  ? JSON.parse(li.dataset.subtasksDone)  : [];
@@ -687,6 +736,7 @@ function closeHoyPanel() {
   hoyDetailPanel.classList.remove('open');
   hoyActiveLi    = null;
   hoyActivePlanLi = null;
+  hoyPanelDescField.hidden = true;
   document.getElementById('task-form').style.right = '';
 }
 
@@ -725,14 +775,29 @@ const quillOptions = {
 };
 
 const quill    = new Quill('#description-editor',  quillOptions);
-const hoyQuill = new Quill('#hoy-panel-desc-editor', quillOptions);
+const hoyQuill = new Quill('#hoy-panel-desc-editor', {
+  theme: 'bubble',
+  readOnly: true,
+  modules: { toolbar: false },
+});
 
-hoyQuill.on('text-change', () => {
-  if (!hoyActivePlanLi) return;
-  const html = hoyQuill.root.innerHTML;
-  if (html && html !== '<p><br></p>') hoyActivePlanLi.dataset.description = html;
-  else delete hoyActivePlanLi.dataset.description;
-  saveDetailTasks();
+hoyQuill.container.addEventListener('click', (e) => {
+  const li = e.target.closest('li');
+  if (!li) return;
+  const ul = li.closest('ul[data-checked]');
+  if (!ul) return;
+
+  e.preventDefault();
+  ul.dataset.checked = ul.dataset.checked === 'true' ? 'false' : 'true';
+
+  if (hoyActivePlanLi) {
+    requestAnimationFrame(() => {
+      const uls = Array.from(hoyQuill.root.querySelectorAll('ul[data-checked]'));
+      const state = uls.map(u => u.dataset.checked === 'true');
+      hoyActivePlanLi.dataset.checklistState = JSON.stringify(state);
+      saveDetailTasks();
+    });
+  }
 });
 
 let editingId = null;
@@ -872,7 +937,7 @@ function startFirebaseListeners() {
   if (data) {
     data.forEach(t => {
       const repeat = (t.repeat === 'never' || !t.repeat) ? 'daily' : t.repeat;
-      addDetailTask(t.title, t.date, repeat, t.weekday ?? '', t.id ?? null, t.category ?? '', t.description ?? '', t.subtasks ?? [], t.owner ?? 'cristina', t.link ?? '', false);
+      addDetailTask(t.title, t.date, repeat, t.weekday ?? '', t.id ?? null, t.category ?? '', t.description ?? '', t.subtasks ?? [], t.owner ?? 'cristina', t.link ?? '', t.checklistState ?? [], false);
     });
     sortDetailTaskList();
   }
@@ -956,6 +1021,7 @@ auth.onAuthStateChanged((user) => {
   if (user) {
     overlay.hidden = true;
     layout.removeAttribute('hidden');
+    restoreNavState();
     startFirebaseListeners();
   } else {
     overlay.hidden = false;
