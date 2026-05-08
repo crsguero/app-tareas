@@ -73,12 +73,13 @@
 
     <main class="content">
 
-      <button id="mobile-back-btn" class="mobile-back-btn" aria-label="Volver al menú">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Atrás
-      </button>
+      <div class="mobile-back-header">
+        <button id="mobile-back-btn" class="mobile-back-btn" aria-label="Volver al menú">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 18L9 12L15 6" stroke="#7A7A7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
 
       <!-- Vista: Hoy -->
       <div id="view-hoy" class="view">
@@ -95,20 +96,22 @@
               autocomplete="off"
               maxlength="200"
             />
-            <button type="submit" id="add-btn">
-              <span class="btn-icon">+</span>
-              <span class="btn-text">Añadir</span>
+            <button type="submit" id="add-btn" aria-label="Añadir tarea">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
             </button>
           </div>
         </form>
 
         <div id="task-list-wrapper">
-          <div id="completed-section" hidden>
-            <button id="completed-toggle" class="link-btn"></button>
-            <button id="completed-clear" class="link-btn">Borrar</button>
-          </div>
           <ul id="task-list"></ul>
           <ul id="completed-list" hidden></ul>
+          <div id="completed-section" hidden>
+            <button id="completed-toggle" class="link-btn"></button>
+            <span> · </span>
+            <button id="completed-clear" class="link-btn">Borrar</button>
+          </div>
           <div id="empty-state" class="empty-state">
             <div class="empty-icon">📝</div>
             <p>No tienes tareas todavía.<br />¡Añade tu primera tarea!</p>

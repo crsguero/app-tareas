@@ -129,10 +129,7 @@ function updateCompletedSection() {
 }
 
 function updateNavCounts() {
-  const allHoyTasks = [
-    ...taskList.querySelectorAll('.task-item'),
-    ...completedList.querySelectorAll('.task-item')
-  ];
+  const allHoyTasks = [...taskList.querySelectorAll('.task-item')];
   document.querySelectorAll('.nav-item[data-owner]').forEach(btn => {
     const span = btn.querySelector('.nav-count');
     if (span) span.textContent = allHoyTasks.filter(li => li.dataset.owner === btn.dataset.owner).length;
@@ -284,11 +281,27 @@ function addTask(text, done = false, meta = null, save = true) {
     }
     if (weekday) byline.dataset.weekday = weekday;
 
-    const dateSpan = document.createElement('span');
-    dateSpan.textContent = formatDate(meta.addedDate);
-    if (meta.addedDate < todayStr()) dateSpan.classList.add('task-byline--past');
-    byline.appendChild(dateSpan);
-    if (meta.repeat) byline.appendChild(document.createTextNode(` · ${repeatDisplay(meta.repeat, weekday)}`));
+    const dateWrap = document.createElement('span');
+    dateWrap.className = 'task-byline-item';
+    if (meta.addedDate < todayStr()) dateWrap.classList.add('task-byline--past');
+    dateWrap.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.6667 2.66663H3.33333C2.59695 2.66663 2 3.26358 2 3.99996V13.3333C2 14.0697 2.59695 14.6666 3.33333 14.6666H12.6667C13.403 14.6666 14 14.0697 14 13.3333V3.99996C14 3.26358 13.403 2.66663 12.6667 2.66663Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.6665 1.33337V4.00004" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.3335 1.33337V4.00004" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 6.66663H14" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const dateText = document.createElement('span');
+    dateText.textContent = formatDate(meta.addedDate);
+    dateWrap.appendChild(dateText);
+    byline.appendChild(dateWrap);
+
+    if (meta.repeat) {
+      const sep = document.createElement('span');
+      sep.textContent = ' · ';
+      byline.appendChild(sep);
+      const repeatWrap = document.createElement('span');
+      repeatWrap.className = 'task-byline-item';
+      repeatWrap.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.3335 0.666626L14.0002 3.33329L11.3335 5.99996" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 7.33337V6.00004C2 5.2928 2.28095 4.61452 2.78105 4.11442C3.28115 3.61433 3.95942 3.33337 4.66667 3.33337H14" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.66667 15.3333L2 12.6667L4.66667 10" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 8.66663V9.99996C14 10.7072 13.719 11.3855 13.219 11.8856C12.7189 12.3857 12.0406 12.6666 11.3333 12.6666H2" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      const repeatText = document.createElement('span');
+      repeatText.textContent = repeatDisplay(meta.repeat, weekday);
+      repeatWrap.appendChild(repeatText);
+      byline.appendChild(repeatWrap);
+    }
     textWrapper.appendChild(byline);
   }
 
@@ -790,6 +803,7 @@ document.addEventListener('click', () => {
 
 hoyPanelDeleteBtn.addEventListener('click', () => {
   if (!hoyActiveLi) return;
+  if (!confirm('¿Eliminar esta tarea?')) return;
   hoyActiveLi.remove();
   closeHoyPanel();
   updateEmptyState();
