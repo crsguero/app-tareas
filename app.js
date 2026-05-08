@@ -853,42 +853,56 @@ const hoyQuill = new Quill('#hoy-panel-desc-editor', {
   modules: { toolbar: false },
 });
 
-hoyQuill.container.addEventListener('click', (e) => {
+// Intercepta taps/clics en checkboxes del panel Hoy antes de que Quill los procese.
+// Quill revierte síncronamente cualquier toggle del DOM, así que hay que actualizar
+// su modelo interno via formatLine para que el cambio sea permanente.
+// Usamos mousedown (desktop) y touchstart (móvil) en vez de click, porque en Chrome
+// con file:// el evento click sobre ::before no siempre llega a document sin DevTools.
+function _handleCheckboxToggle(e) {
+  if (!hoyActivePlanLi) return;
   const li = e.target.closest('li');
-  if (!li) return;
+  if (!li || !hoyQuill.root.contains(li)) return;
   const ul = li.closest('ul[data-checked]');
   if (!ul) return;
 
-  // Fase de captura: impedimos que Quill procese también este click
+  // Tomamos control total: Quill no debe procesar este evento
   e.preventDefault();
   e.stopPropagation();
-  if (!hoyActivePlanLi) return;
+  e.stopImmediatePropagation();
 
+  const wasChecked = ul.dataset.checked === 'true';
+  const newListValue = wasChecked ? 'unchecked' : 'checked';
+
+  // Actualizar el modelo de Quill (no solo el DOM) para que el toggle sea permanente
+  const blot = Quill.find(li);
+  if (blot) {
+    const index = hoyQuill.getIndex(blot);
+    hoyQuill.enable(true);
+    hoyQuill.formatLine(index, 1, 'list', newListValue, Quill.sources.USER);
+    hoyQuill.enable(false);
+  } else {
+    // Fallback: modificar el atributo directamente
+    ul.dataset.checked = wasChecked ? 'false' : 'true';
+  }
+
+  // Leer el estado resultante del DOM y persistir
   const allLis = Array.from(hoyQuill.root.querySelectorAll('ul[data-checked] > li'));
-  const clickedIndex = allLis.indexOf(li);
-  if (clickedIndex === -1) return;
+  if (!allLis.length) return;
+  const newState = allLis.map(l => l.closest('ul[data-checked]').dataset.checked === 'true');
 
-  const stored = hoyActivePlanLi.dataset.checklistState;
-  const checklistState = stored
-    ? JSON.parse(stored)
-    : allLis.map(item => item.closest('ul[data-checked]').dataset.checked === 'true');
-
-  while (checklistState.length < allLis.length) checklistState.push(false);
-  checklistState[clickedIndex] = !checklistState[clickedIndex];
-
-  hoyActivePlanLi.dataset.checklistState = JSON.stringify(checklistState);
+  hoyActivePlanLi.dataset.checklistState = JSON.stringify(newState);
   const taskId = hoyActivePlanLi.dataset.id;
   const livePlanLi = detailTaskList.querySelector(`[data-id="${taskId}"]`);
   if (livePlanLi) {
-    livePlanLi.dataset.checklistState = JSON.stringify(checklistState);
+    livePlanLi.dataset.checklistState = JSON.stringify(newState);
     hoyActivePlanLi = livePlanLi;
   }
-  dbg('[GUARDAR] taskId:' + taskId + ' live:' + !!livePlanLi + ' state:' + JSON.stringify(checklistState));
+  dbg('[GUARDAR] taskId:' + taskId + ' live:' + !!livePlanLi + ' state:' + JSON.stringify(newState));
   saveDetailTasks();
+}
 
-  const desc = hoyActivePlanLi.dataset.description ?? '';
-  hoyQuill.clipboard.dangerouslyPasteHTML(applyChecklistState(desc, checklistState));
-}, true); // fase de captura: dispara antes que los handlers internos de Quill
+document.addEventListener('mousedown',  _handleCheckboxToggle, { capture: true, passive: false });
+document.addEventListener('touchstart', _handleCheckboxToggle, { capture: true, passive: false });
 
 let editingId = null;
 
