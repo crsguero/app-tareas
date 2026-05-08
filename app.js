@@ -727,6 +727,8 @@ function openHoyPanel(li) {
   hoyActivePlanLi = planLi ?? null;
   const desc = planLi?.dataset.description ?? '';
   const checklistState = planLi?.dataset.checklistState ? JSON.parse(planLi.dataset.checklistState) : [];
+  // [DEBUG LOG 2] Al abrir el panel
+  console.log('[ABRIR PANEL] seriesId:', seriesId, '| planLi encontrado:', !!planLi, '| checklistState cargado:', JSON.stringify(checklistState));
   const hasDesc = desc && desc !== '<p><br></p>';
   hoyQuill.clipboard.dangerouslyPasteHTML(hasDesc ? applyChecklistState(desc, checklistState) : '');
   hoyPanelDescField.hidden = false;
@@ -863,6 +865,14 @@ hoyQuill.container.addEventListener('click', (e) => {
   checklistState[clickedIndex] = !checklistState[clickedIndex];
 
   hoyActivePlanLi.dataset.checklistState = JSON.stringify(checklistState);
+  const taskId = hoyActivePlanLi.dataset.id;
+  const livePlanLi = detailTaskList.querySelector(`[data-id="${taskId}"]`);
+  if (livePlanLi) {
+    livePlanLi.dataset.checklistState = JSON.stringify(checklistState);
+    hoyActivePlanLi = livePlanLi;
+  }
+  // [DEBUG LOG 1] Al guardar tras click en checkbox
+  console.log('[GUARDAR CHECKBOX] taskId:', taskId, '| livePlanLi encontrado:', !!livePlanLi, '| checklistState a guardar:', JSON.stringify(checklistState));
   saveDetailTasks();
 
   const desc = hoyActivePlanLi.dataset.description ?? '';
@@ -1009,6 +1019,13 @@ function startFirebaseListeners() {
       addDetailTask(t.title, t.date, repeat, t.weekday ?? '', t.id ?? null, t.category ?? '', t.description ?? '', t.subtasks ?? [], t.owner ?? 'cristina', t.link ?? '', t.checklistState ?? [], false);
     });
     sortDetailTaskList();
+  }
+  if (hoyActiveLi?.dataset.seriesId) {
+    hoyActivePlanLi = detailTaskList.querySelector(`[data-id="${hoyActiveLi.dataset.seriesId}"]`) ?? null;
+    // [DEBUG LOG 3] Firebase devolvió datos; mostrar checklistState del elemento activo
+    const sid = hoyActiveLi.dataset.seriesId;
+    const rebuilt = detailTaskList.querySelector(`[data-id="${sid}"]`);
+    console.log('[FIREBASE REBUILD] seriesId activo:', sid, '| elemento reconstruido:', !!rebuilt, '| checklistState en nuevo elemento:', rebuilt?.dataset.checklistState ?? 'no establecido');
   }
   updateDetailEmptyState();
   updateNavCounts();
