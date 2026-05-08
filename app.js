@@ -26,7 +26,8 @@ const hoyPanelRepeat     = document.getElementById('hoy-panel-repeat');
 const hoyPanelDeleteBtn  = document.getElementById('hoy-panel-delete-btn');
 const hoyMenuBtn         = document.getElementById('hoy-menu-btn');
 const hoyMenuDropdown    = document.getElementById('hoy-menu-dropdown');
-const hoyPanelDescField  = document.getElementById('hoy-panel-desc-field');
+const hoyPanelDescField       = document.getElementById('hoy-panel-desc-field');
+const hoyPanelDescPlaceholder = document.getElementById('hoy-panel-desc-placeholder');
 const editSubtasksList   = document.getElementById('edit-subtasks-list');
 const editAddSubtask     = document.getElementById('edit-add-subtask');
 let hoyActiveLi    = null;
@@ -163,8 +164,9 @@ function formatDate(isoDate) {
   if (isoDate === today)     return 'Hoy';
   if (isoDate === yesterday) return 'Ayer';
   if (isoDate === tomorrow)  return 'Mañana';
+  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
   const [y, m, d] = isoDate.split('-');
-  return `${d}/${m}/${y}`;
+  return `${parseInt(d)} ${months[parseInt(m) - 1]} ${y}`;
 }
 
 // --- Persistence (Firebase) ---
@@ -695,8 +697,11 @@ function openHoyPanel(li) {
   hoyActivePlanLi = planLi ?? null;
   const desc = planLi?.dataset.description ?? '';
   const checklistState = planLi?.dataset.checklistState ? JSON.parse(planLi.dataset.checklistState) : [];
-  hoyQuill.clipboard.dangerouslyPasteHTML(applyChecklistState(desc, checklistState));
-  hoyPanelDescField.hidden = !desc || desc === '<p><br></p>';
+  const hasDesc = desc && desc !== '<p><br></p>';
+  hoyQuill.clipboard.dangerouslyPasteHTML(hasDesc ? applyChecklistState(desc, checklistState) : '');
+  hoyPanelDescField.hidden = false;
+  hoyPanelDescPlaceholder.hidden = hasDesc;
+  document.getElementById('hoy-panel-desc-editor').hidden = !hasDesc;
 
   const subtasks     = planLi?.dataset.subtasks ? JSON.parse(planLi.dataset.subtasks) : [];
   const subtasksDone = li.dataset.subtasksDone  ? JSON.parse(li.dataset.subtasksDone)  : [];
