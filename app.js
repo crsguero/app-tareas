@@ -33,6 +33,17 @@ const editAddSubtask     = document.getElementById('edit-add-subtask');
 let hoyActiveLi    = null;
 let hoyActivePlanLi = null;
 
+// --- Debug persistente (funciona con y sin DevTools abierto) ---
+const _dbgLog = [];
+function dbg(msg) {
+  const entry = new Date().toISOString().slice(11,23) + ' ' + msg;
+  _dbgLog.push(entry);
+  if (_dbgLog.length > 40) _dbgLog.shift();
+  try { localStorage.setItem('_appDbg', JSON.stringify(_dbgLog)); } catch(e) {}
+  console.log(entry);
+}
+// Para leer el log desde consola: JSON.parse(localStorage.getItem('_appDbg')).forEach(l=>console.log(l))
+
 const repeatLabels = { daily: 'Diariamente', weekly: 'Semanalmente', monthly: 'Mensualmente', quarterly: 'Trimestralmente', yearly: 'Anualmente', biannually: 'Cada dos años' };
 const weekdayLabels = { '0': 'Domingo', '1': 'Lunes', '2': 'Martes', '3': 'Miércoles', '4': 'Jueves', '5': 'Viernes', '6': 'Sábado' };
 const weekdayPlurals = { '0': 'domingos', '1': 'lunes', '2': 'martes', '3': 'miércoles', '4': 'jueves', '5': 'viernes', '6': 'sábados' };
@@ -727,8 +738,7 @@ function openHoyPanel(li) {
   hoyActivePlanLi = planLi ?? null;
   const desc = planLi?.dataset.description ?? '';
   const checklistState = planLi?.dataset.checklistState ? JSON.parse(planLi.dataset.checklistState) : [];
-  // [DEBUG LOG 2] Al abrir el panel
-  console.log('[ABRIR PANEL] seriesId:', seriesId, '| planLi encontrado:', !!planLi, '| checklistState cargado:', JSON.stringify(checklistState));
+  dbg('[ABRIR] seriesId:' + seriesId + ' planLi:' + !!planLi + ' state:' + JSON.stringify(checklistState));
   const hasDesc = desc && desc !== '<p><br></p>';
   hoyQuill.clipboard.dangerouslyPasteHTML(hasDesc ? applyChecklistState(desc, checklistState) : '');
   hoyPanelDescField.hidden = false;
@@ -871,8 +881,7 @@ hoyQuill.container.addEventListener('click', (e) => {
     livePlanLi.dataset.checklistState = JSON.stringify(checklistState);
     hoyActivePlanLi = livePlanLi;
   }
-  // [DEBUG LOG 1] Al guardar tras click en checkbox
-  console.log('[GUARDAR CHECKBOX] taskId:', taskId, '| livePlanLi encontrado:', !!livePlanLi, '| checklistState a guardar:', JSON.stringify(checklistState));
+  dbg('[GUARDAR] taskId:' + taskId + ' live:' + !!livePlanLi + ' state:' + JSON.stringify(checklistState));
   saveDetailTasks();
 
   const desc = hoyActivePlanLi.dataset.description ?? '';
@@ -1022,10 +1031,9 @@ function startFirebaseListeners() {
   }
   if (hoyActiveLi?.dataset.seriesId) {
     hoyActivePlanLi = detailTaskList.querySelector(`[data-id="${hoyActiveLi.dataset.seriesId}"]`) ?? null;
-    // [DEBUG LOG 3] Firebase devolvió datos; mostrar checklistState del elemento activo
     const sid = hoyActiveLi.dataset.seriesId;
     const rebuilt = detailTaskList.querySelector(`[data-id="${sid}"]`);
-    console.log('[FIREBASE REBUILD] seriesId activo:', sid, '| elemento reconstruido:', !!rebuilt, '| checklistState en nuevo elemento:', rebuilt?.dataset.checklistState ?? 'no establecido');
+    dbg('[FIREBASE] sid:' + sid + ' rebuilt:' + !!rebuilt + ' state:' + (rebuilt?.dataset.checklistState ?? 'vacío'));
   }
   updateDetailEmptyState();
   updateNavCounts();
