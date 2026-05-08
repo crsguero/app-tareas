@@ -125,6 +125,20 @@ function updateCompletedSection() {
     : `Mostrar tareas completadas (${count})`;
 }
 
+function updateNavCounts() {
+  const allHoyTasks = [
+    ...taskList.querySelectorAll('.task-item'),
+    ...completedList.querySelectorAll('.task-item')
+  ];
+  document.querySelectorAll('.nav-item[data-owner]').forEach(btn => {
+    const span = btn.querySelector('.nav-count');
+    if (span) span.textContent = allHoyTasks.filter(li => li.dataset.owner === btn.dataset.owner).length;
+  });
+  const planBtn = document.querySelector('.nav-item[data-view="planificadas"]');
+  const planSpan = planBtn?.querySelector('.nav-count');
+  if (planSpan) planSpan.textContent = detailTaskList.querySelectorAll('.detail-task-item').length;
+}
+
 function filterHoyTasks() {
   [taskList, completedList].forEach(list => {
     list.querySelectorAll('.task-item').forEach(li => {
@@ -980,6 +994,7 @@ function startFirebaseListeners() {
     sortDetailTaskList();
   }
   updateDetailEmptyState();
+  updateNavCounts();
 
   if (!detailReady) {
     detailReady = true;
@@ -1043,6 +1058,7 @@ db.ref('tasks').on('value', (snapshot) => {
   filterHoyTasks();
   updateEmptyState();
   updateCompletedSection();
+  updateNavCounts();
 
   if (!tasksReady) {
     tasksReady = true;
