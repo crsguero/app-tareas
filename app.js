@@ -24,6 +24,8 @@ const hoyPanelTitle      = document.getElementById('hoy-panel-title');
 const hoyPanelDate       = document.getElementById('hoy-panel-date');
 const hoyPanelRepeat     = document.getElementById('hoy-panel-repeat');
 const hoyPanelDeleteBtn  = document.getElementById('hoy-panel-delete-btn');
+const hoyMenuBtn         = document.getElementById('hoy-menu-btn');
+const hoyMenuDropdown    = document.getElementById('hoy-menu-dropdown');
 const hoyPanelDescField  = document.getElementById('hoy-panel-desc-field');
 const editSubtasksList   = document.getElementById('edit-subtasks-list');
 const editAddSubtask     = document.getElementById('edit-add-subtask');
@@ -638,10 +640,22 @@ detailForm.addEventListener('submit', (e) => {
 function applyChecklistState(html, checklistState) {
   if (!checklistState.length || !html) return html;
   const doc = new DOMParser().parseFromString(html, 'text/html');
-  const uls = doc.querySelectorAll('ul[data-checked]');
-  uls.forEach((ul, i) => {
-    if (i < checklistState.length) ul.dataset.checked = checklistState[i] ? 'true' : 'false';
-  });
+  let idx = 0;
+  for (const ul of Array.from(doc.querySelectorAll('ul[data-checked]'))) {
+    const lis = Array.from(ul.querySelectorAll(':scope > li'));
+    if (lis.length === 1) {
+      if (idx < checklistState.length) ul.dataset.checked = checklistState[idx++] ? 'true' : 'false';
+    } else {
+      for (const li of lis) {
+        const newUl = doc.createElement('ul');
+        newUl.dataset.checked = (idx < checklistState.length && checklistState[idx]) ? 'true' : 'false';
+        idx++;
+        newUl.appendChild(li.cloneNode(true));
+        ul.parentNode.insertBefore(newUl, ul);
+      }
+      ul.parentNode.removeChild(ul);
+    }
+  }
   return doc.body.innerHTML;
 }
 
@@ -737,10 +751,20 @@ function closeHoyPanel() {
   hoyActiveLi    = null;
   hoyActivePlanLi = null;
   hoyPanelDescField.hidden = true;
+  hoyMenuDropdown.hidden = true;
   document.getElementById('task-form').style.right = '';
 }
 
 hoyPanelClose.addEventListener('click', closeHoyPanel);
+
+hoyMenuBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  hoyMenuDropdown.hidden = !hoyMenuDropdown.hidden;
+});
+
+document.addEventListener('click', () => {
+  if (!hoyMenuDropdown.hidden) hoyMenuDropdown.hidden = true;
+});
 
 hoyPanelDeleteBtn.addEventListener('click', () => {
   if (!hoyActiveLi) return;
@@ -788,16 +812,25 @@ hoyQuill.container.addEventListener('click', (e) => {
   if (!ul) return;
 
   e.preventDefault();
-  ul.dataset.checked = ul.dataset.checked === 'true' ? 'false' : 'true';
+  if (!hoyActivePlanLi) return;
 
-  if (hoyActivePlanLi) {
-    requestAnimationFrame(() => {
-      const uls = Array.from(hoyQuill.root.querySelectorAll('ul[data-checked]'));
-      const state = uls.map(u => u.dataset.checked === 'true');
-      hoyActivePlanLi.dataset.checklistState = JSON.stringify(state);
-      saveDetailTasks();
-    });
-  }
+  const allLis = Array.from(hoyQuill.root.querySelectorAll('ul[data-checked] > li'));
+  const clickedIndex = allLis.indexOf(li);
+  if (clickedIndex === -1) return;
+
+  const stored = hoyActivePlanLi.dataset.checklistState;
+  const checklistState = stored
+    ? JSON.parse(stored)
+    : allLis.map(item => item.closest('ul[data-checked]').dataset.checked === 'true');
+
+  while (checklistState.length < allLis.length) checklistState.push(false);
+  checklistState[clickedIndex] = !checklistState[clickedIndex];
+
+  hoyActivePlanLi.dataset.checklistState = JSON.stringify(checklistState);
+  saveDetailTasks();
+
+  const desc = hoyActivePlanLi.dataset.description ?? '';
+  hoyQuill.clipboard.dangerouslyPasteHTML(applyChecklistState(desc, checklistState));
 });
 
 let editingId = null;

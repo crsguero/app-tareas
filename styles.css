@@ -115,20 +115,65 @@ body {
 
 .hoy-panel-inner {
   width: 360px;
-  padding: 48px 36px 100px 40px;
+  padding: 24px;
   box-sizing: border-box;
   position: relative;
 }
 
-.hoy-close-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+.hoy-panel-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.hoy-close-icon-mobile { display: none; }
+.hoy-close-icon-desktop { display: block; }
+
+.hoy-menu-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   color: #bbb;
   cursor: pointer;
+  padding: 0;
+  line-height: 0;
+  margin-left: auto;
+  transition: color 0.15s;
+}
+
+.hoy-menu-btn:hover {
+  color: #1c1c1c;
+}
+
+.hoy-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  min-width: 160px;
+  z-index: 100;
   padding: 4px;
+}
+
+.hoy-close-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  padding: 0;
   line-height: 0;
   transition: color 0.15s;
 }
@@ -138,27 +183,28 @@ body {
 }
 
 .hoy-title {
-  font-size: 1.75rem;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 700;
   color: #1c1c1c;
-  line-height: 1.2;
-  margin: 0 0 6px;
+  line-height: 32px;
+  margin: 0 0 8px;
 }
 
 .hoy-meta {
-  font-size: 0.875rem;
-  color: #9ca3af;
+  font-size: 15px;
+  color: #7A7A7A;
   margin: 0 0 32px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  gap: 6px;
 }
 
 #hoy-meta-date-wrap,
 #hoy-meta-repeat-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .hoy-meta-icon {
@@ -265,6 +311,8 @@ body {
 
 #hoy-panel-desc-editor .ql-editor li:not(.ql-direction-rtl)::before {
   text-align: left !important;
+  margin-left: -28px;
+  margin-right: 12px;
 }
 
 #hoy-panel-desc-editor .ql-editor ul[data-checked] > li,
@@ -284,6 +332,7 @@ body {
   box-sizing: border-box !important;
   vertical-align: middle !important;
   background: transparent !important;
+  margin-top: -4px;
 }
 
 #hoy-panel-desc-editor .ql-editor ul[data-checked="true"] > li::before {
@@ -296,25 +345,28 @@ body {
   box-sizing: border-box !important;
   vertical-align: middle !important;
   background: #000 url("data:image/svg+xml,%3Csvg viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4L3.5 6.5L9 1' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / 9px !important;
+  margin-top: -4px;
 }
 
 #hoy-panel-delete-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
   background: none;
   border: none;
-  color: #d1d5db;
-  font-size: 0.8rem;
+  color: #1c1c1c;
+  font-size: 0.875rem;
   font-family: inherit;
   cursor: pointer;
-  padding: 0;
-  transition: color 0.15s;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
 }
 
 #hoy-panel-delete-btn:hover {
+  background: #fef2f2;
   color: #e05252;
 }
 
@@ -1205,6 +1257,9 @@ h1 {
 
 /* Responsive */
 @media (max-width: 600px) {
+  .hoy-close-icon-desktop { display: none; }
+  .hoy-close-icon-mobile { display: block; }
+
   .app-layout {
     flex-direction: column;
   }
@@ -1351,6 +1406,6 @@ h1 {
 
   .hoy-panel-inner {
     width: 100%;
-    padding: 48px 24px 48px 24px;
+    padding: 24px;
   }
 }
