@@ -859,7 +859,9 @@ hoyQuill.container.addEventListener('click', (e) => {
   const ul = li.closest('ul[data-checked]');
   if (!ul) return;
 
+  // Fase de captura: impedimos que Quill procese también este click
   e.preventDefault();
+  e.stopPropagation();
   if (!hoyActivePlanLi) return;
 
   const allLis = Array.from(hoyQuill.root.querySelectorAll('ul[data-checked] > li'));
@@ -886,7 +888,7 @@ hoyQuill.container.addEventListener('click', (e) => {
 
   const desc = hoyActivePlanLi.dataset.description ?? '';
   hoyQuill.clipboard.dangerouslyPasteHTML(applyChecklistState(desc, checklistState));
-});
+}, true); // fase de captura: dispara antes que los handlers internos de Quill
 
 let editingId = null;
 
