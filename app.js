@@ -560,6 +560,7 @@ function syncRecurringTasks() {
   const todayWeekday = new Date().getDay().toString();
   const log = JSON.parse(localStorage.getItem('daily-log') ?? '{}');
   let logUpdated = false;
+  let needsDetailSave = false;
 
   detailTaskList.querySelectorAll('.detail-task-item').forEach(li => {
     const id = li.dataset.id;
@@ -596,9 +597,14 @@ function syncRecurringTasks() {
     addTask(li.querySelector('.detail-task-title').textContent, false, { addedDate: today, repeat, weekday, seriesId: id, category: li.dataset.category ?? null, owner: li.dataset.owner ?? 'cristina' });
     log[id] = today;
     logUpdated = true;
+    if (li.dataset.checklistState && JSON.parse(li.dataset.checklistState).length) {
+      li.dataset.checklistState = '[]';
+      needsDetailSave = true;
+    }
   });
 
   if (logUpdated) localStorage.setItem('daily-log', JSON.stringify(log));
+  if (needsDetailSave) saveDetailTasks();
 }
 
 const categoryColors   = { hogar: '#f5c518', personal: '#9b5de5', salud: '#22c55e' };
