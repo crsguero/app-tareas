@@ -701,7 +701,9 @@ function applyChecklistState(html, checklistState) {
 }
 
 function openHoyPanel(li) {
+  document.querySelectorAll('.task-item--active').forEach(el => el.classList.remove('task-item--active'));
   hoyActiveLi = li;
+  li.classList.add('task-item--active');
 
   const text    = li.querySelector('.task-text').textContent;
   const byline  = li.querySelector('.task-byline');
@@ -794,6 +796,7 @@ function renderHoySubtasks(subtasks, doneIds) {
 
 function closeHoyPanel() {
   hoyDetailPanel.classList.remove('open');
+  if (hoyActiveLi) hoyActiveLi.classList.remove('task-item--active');
   hoyActiveLi    = null;
   hoyActivePlanLi = null;
   hoyPanelDescField.hidden = true;
