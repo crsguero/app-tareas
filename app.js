@@ -147,6 +147,8 @@ function filterHoyTasks() {
     });
   });
   completedList.hidden = true;
+  const ownerLabel = ownerMeta[activeHoyOwner]?.label ?? activeHoyOwner;
+  document.getElementById('view-hoy-title').textContent = ownerLabel;
   updateEmptyState();
   updateCompletedSection();
 }
@@ -716,8 +718,10 @@ function openHoyPanel(li) {
   if (date) {
     hoyPanelDate.textContent = formatDate(date);
     dateWrap.hidden = false;
+    dateWrap.classList.toggle('task-byline--past', date < todayStr());
   } else {
     dateWrap.hidden = true;
+    dateWrap.classList.remove('task-byline--past');
   }
 
   if (repeat) {
@@ -806,6 +810,16 @@ hoyMenuBtn.addEventListener('click', (e) => {
 
 document.addEventListener('click', () => {
   if (!hoyMenuDropdown.hidden) hoyMenuDropdown.hidden = true;
+});
+
+document.getElementById('hoy-panel-complete-btn').addEventListener('click', () => {
+  if (!hoyActiveLi) return;
+  hoyActiveLi.classList.add('done');
+  completedList.appendChild(hoyActiveLi);
+  closeHoyPanel();
+  updateEmptyState();
+  updateCompletedSection();
+  saveTasks();
 });
 
 hoyPanelDeleteBtn.addEventListener('click', () => {

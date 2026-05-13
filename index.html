@@ -41,12 +41,12 @@
       <div class="sidebar-brand">Mis listas</div>
       <button class="nav-item active" data-view="hoy" data-owner="cristina">
         <span class="nav-owner-avatar"><img src="assets/Cristina.png" alt="Cristina"></span>
-        Hoy
+        Cristina
         <span class="nav-count"></span>
       </button>
       <button class="nav-item" data-view="hoy" data-owner="fernando">
         <span class="nav-owner-avatar"><img src="assets/Fernando.png" alt="Fernando"></span>
-        Hoy
+        Fernando
         <span class="nav-count"></span>
       </button>
       <button class="nav-item" data-view="planificadas">
@@ -76,7 +76,9 @@
       <div class="mobile-back-header">
         <button id="mobile-back-btn" class="mobile-back-btn" aria-label="Volver al menú">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 18L9 12L15 6" stroke="#7A7A7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 12H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 6H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 18H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
       </div>
@@ -84,7 +86,7 @@
       <!-- Vista: Hoy -->
       <div id="view-hoy" class="view">
         <header class="view-header">
-          <h1>Hoy</h1>
+          <h1 id="view-hoy-title">Cristina</h1>
         </header>
 
         <form id="task-form">
@@ -97,8 +99,9 @@
               maxlength="200"
             />
             <button type="submit" id="add-btn" aria-label="Añadir tarea">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 5V19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
           </div>
@@ -237,24 +240,33 @@
         <div class="hoy-panel-header">
           <button id="hoy-panel-close" aria-label="Cerrar" class="hoy-close-btn">
             <svg class="hoy-close-icon-desktop" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13 17L18 12L13 7" stroke="#7A7A7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M6 17L11 12L6 7" stroke="#7A7A7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M13 17L18 12L13 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6 17L11 12L6 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <svg class="hoy-close-icon-mobile" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15 18L9 12L15 6" stroke="#7A7A7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
           <button id="hoy-menu-btn" aria-label="Más opciones" class="hoy-menu-btn">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#7A7A7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z" stroke="#7A7A7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z" stroke="#7A7A7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
           <div id="hoy-menu-dropdown" class="hoy-menu-dropdown" hidden>
+            <button type="button" id="hoy-panel-complete-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Marcar como completada
+            </button>
             <button type="button" id="hoy-panel-delete-btn">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 4h10M6.5 4V2.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V4M5.5 4l.5 9h4l.5-9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.5 5H4.16667H17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M15.8334 4.99996V16.6666C15.8334 17.1087 15.6578 17.5326 15.3453 17.8451C15.0327 18.1577 14.6088 18.3333 14.1667 18.3333H5.83341C5.39139 18.3333 4.96746 18.1577 4.6549 17.8451C4.34234 17.5326 4.16675 17.1087 4.16675 16.6666V4.99996M6.66675 4.99996V3.33329C6.66675 2.89127 6.84234 2.46734 7.1549 2.15478C7.46746 1.84222 7.89139 1.66663 8.33341 1.66663H11.6667C12.1088 1.66663 12.5327 1.84222 12.8453 2.15478C13.1578 2.46734 13.3334 2.89127 13.3334 3.33329V4.99996" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8.33325 9.16663V14.1666" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M11.6667 9.16663V14.1666" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               Eliminar tarea
             </button>
@@ -265,20 +277,20 @@
         <p class="hoy-meta">
           <span id="hoy-meta-date-wrap">
             <svg class="hoy-meta-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12.6667 2.66663H3.33333C2.59695 2.66663 2 3.26358 2 3.99996V13.3333C2 14.0697 2.59695 14.6666 3.33333 14.6666H12.6667C13.403 14.6666 14 14.0697 14 13.3333V3.99996C14 3.26358 13.403 2.66663 12.6667 2.66663Z" stroke="#7A7A7A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M10.6665 1.33337V4.00004" stroke="#7A7A7A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M5.3335 1.33337V4.00004" stroke="#7A7A7A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 6.66663H14" stroke="#7A7A7A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12.6667 2.66663H3.33333C2.59695 2.66663 2 3.26358 2 3.99996V13.3333C2 14.0697 2.59695 14.6666 3.33333 14.6666H12.6667C13.403 14.6666 14 14.0697 14 13.3333V3.99996C14 3.26358 13.403 2.66663 12.6667 2.66663Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10.6665 1.33337V4.00004" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M5.3335 1.33337V4.00004" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 6.66663H14" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <span id="hoy-panel-date"></span>
           </span>
           <span id="hoy-meta-sep"> · </span>
           <span id="hoy-meta-repeat-wrap">
             <svg class="hoy-meta-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M11.3335 0.666626L14.0002 3.33329L11.3335 5.99996" stroke="#7A7A7A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 7.33337V6.00004C2 5.2928 2.28095 4.61452 2.78105 4.11442C3.28115 3.61433 3.95942 3.33337 4.66667 3.33337H14" stroke="#7A7A7A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M4.66667 15.3333L2 12.6667L4.66667 10" stroke="#7A7A7A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M14 8.66663V9.99996C14 10.7072 13.719 11.3855 13.219 11.8856C12.7189 12.3857 12.0406 12.6666 11.3333 12.6666H2" stroke="#7A7A7A" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M11.3335 0.666626L14.0002 3.33329L11.3335 5.99996" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 7.33337V6.00004C2 5.2928 2.28095 4.61452 2.78105 4.11442C3.28115 3.61433 3.95942 3.33337 4.66667 3.33337H14" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4.66667 15.3333L2 12.6667L4.66667 10" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M14 8.66663V9.99996C14 10.7072 13.719 11.3855 13.219 11.8856C12.7189 12.3857 12.0406 12.6666 11.3333 12.6666H2" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <span id="hoy-panel-repeat"></span>
           </span>
