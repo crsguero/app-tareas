@@ -874,7 +874,7 @@ h1 {
 #detail-task-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 24px;
   padding: 20px 24px 24px;
 }
 
@@ -1092,12 +1092,15 @@ h1 {
 }
 
 .edit-panel-inner .field-group input,
-.edit-panel-inner .field-group select {
+.edit-panel-inner .field-group select,
+.modal .field-group input,
+.modal .field-group select {
   font-size: 16px;
   line-height: 24px;
 }
 
-.edit-panel-inner .field-group select {
+.edit-panel-inner .field-group select,
+.modal .field-group select {
   background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   padding-right: 40px;
 }
@@ -1107,14 +1110,21 @@ h1 {
 .edit-panel-inner input[type="date"]::-webkit-datetime-edit-text,
 .edit-panel-inner input[type="date"]::-webkit-datetime-edit-day-field,
 .edit-panel-inner input[type="date"]::-webkit-datetime-edit-month-field,
-.edit-panel-inner input[type="date"]::-webkit-datetime-edit-year-field {
+.edit-panel-inner input[type="date"]::-webkit-datetime-edit-year-field,
+.modal input[type="date"]::-webkit-datetime-edit,
+.modal input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+.modal input[type="date"]::-webkit-datetime-edit-text,
+.modal input[type="date"]::-webkit-datetime-edit-day-field,
+.modal input[type="date"]::-webkit-datetime-edit-month-field,
+.modal input[type="date"]::-webkit-datetime-edit-year-field {
   font-size: 16px;
   line-height: 24px;
   color: #1c1c1c;
   font-family: inherit;
 }
 
-.edit-panel-inner input[type="date"]::-webkit-calendar-picker-indicator {
+.edit-panel-inner input[type="date"]::-webkit-calendar-picker-indicator,
+.modal input[type="date"]::-webkit-calendar-picker-indicator {
   background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.8333 3.33337H4.16667C3.24619 3.33337 2.5 4.07957 2.5 5.00004V16.6667C2.5 17.5872 3.24619 18.3334 4.16667 18.3334H15.8333C16.7538 18.3334 17.5 17.5872 17.5 16.6667V5.00004C17.5 4.07957 16.7538 3.33337 15.8333 3.33337Z' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M13.3333 1.66663V4.99996' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M6.66667 1.66663V4.99996' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M2.5 8.33337H17.5' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-size: 20px 20px;
   width: 20px;
@@ -1124,12 +1134,15 @@ h1 {
 }
 
 .edit-panel-inner .field-group input:focus,
-.edit-panel-inner .field-group select:focus {
+.edit-panel-inner .field-group select:focus,
+.modal .field-group input:focus,
+.modal .field-group select:focus {
   border-color: var(--brand-primary);
   box-shadow: inset 0 0 0 1px var(--brand-primary);
 }
 
-.edit-panel-inner .field-group label {
+.edit-panel-inner .field-group label,
+.modal .field-group label {
   font-size: 14px;
   line-height: 20px;
   font-weight: 500;
