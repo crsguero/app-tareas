@@ -145,6 +145,7 @@
                   <th id="th-repeat" class="th-sortable">Repetición <span class="sort-indicator">↕</span></th>
                   <th>Día de inicio</th>
                   <th id="th-category" class="th-sortable">Categoría <span class="sort-indicator">↕</span></th>
+                  <th>Alternada</th>
                 </tr>
               </thead>
               <tbody id="detail-task-list"></tbody>
@@ -312,7 +313,7 @@
               <option value="0">Domingo</option>
             </select>
           </div>
-          <div class="field-group">
+          <div class="field-group" id="edit-alterna-tareas-group" hidden>
             <label>Alternar tareas</label>
             <div class="toggle-row">
               <label class="toggle-switch">
@@ -320,6 +321,10 @@
                 <span class="toggle-track"></span>
               </label>
             </div>
+          </div>
+          <div class="field-group" id="edit-linked-tasks-group" hidden>
+            <label>Tareas alternadas</label>
+            <div id="edit-linked-tasks-list" class="linked-tasks-list"></div>
           </div>
           <div class="field-group">
             <label>Descripción</label>

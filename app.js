@@ -218,6 +218,7 @@ function saveDetailTasks() {
     link:  tr.dataset.link  ?? '',
     checklistState: tr.dataset.checklistState ? JSON.parse(tr.dataset.checklistState) : [],
     alternaTareas: tr.dataset.alternaTareas === 'true',
+    linkedTasks: tr.dataset.linkedTasks ? JSON.parse(tr.dataset.linkedTasks) : [],
   }));
   db.ref('detail-tasks').set(tasks.length ? tasks : null);
 }
@@ -405,7 +406,7 @@ function buildOwnerAvatar(owner) {
   return wrap;
 }
 
-function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, category = '', description = '', subtasks = [], owner = 'cristina', link = '', checklistState = [], save = true, alternaTareas = false) {
+function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, category = '', description = '', subtasks = [], owner = 'cristina', link = '', checklistState = [], save = true, alternaTareas = false, linkedTasks = []) {
   const trimmed = title.trim();
   if (!trimmed) return;
 
@@ -420,6 +421,7 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   if (link)  tr.dataset.link  = link;
   if (checklistState?.length) tr.dataset.checklistState = JSON.stringify(checklistState);
   tr.dataset.alternaTareas = alternaTareas ? 'true' : 'false';
+  if (linkedTasks?.length) tr.dataset.linkedTasks = JSON.stringify(linkedTasks);
 
   const nameCell = document.createElement('td');
   nameCell.className = 'detail-task-name-cell';
@@ -460,7 +462,15 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
     editRepeat.value   = rEl?.dataset.value ?? 'daily';
     editWeekday.value  = rEl?.dataset.weekday || '1';
     editWeekdayGroup.hidden = editRepeat.value !== 'weekly';
-    editAlternaTareas.checked = tr.dataset.alternaTareas === 'true';
+    const isAlternaCompatible = alternaRepeatValues.has(editRepeat.value);
+    editAlternaTareasGroup.hidden = !isAlternaCompatible;
+    editAlternaTareas.checked = isAlternaCompatible && tr.dataset.alternaTareas === 'true';
+    if (editAlternaTareas.checked) {
+      populateLinkedTasksList();
+      editLinkedTasksGroup.hidden = false;
+    } else {
+      editLinkedTasksGroup.hidden = true;
+    }
     updateEditCategoryDot();
     openEditPanel();
   });
@@ -469,11 +479,16 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   ownerCell.className = 'detail-task-owner-cell';
   ownerCell.appendChild(buildOwnerAvatar(owner));
 
+  const alternaCell = document.createElement('td');
+  alternaCell.className = 'detail-task-alterna-cell';
+  alternaCell.textContent = alternaTareas ? 'Sí' : 'No';
+
   tr.appendChild(nameCell);
   tr.appendChild(ownerCell);
   tr.appendChild(repeatCell);
   tr.appendChild(dateCell);
   tr.appendChild(catCell);
+  tr.appendChild(alternaCell);
   detailTaskList.appendChild(tr);
   if (save) sortDetailTaskList();
 
@@ -540,6 +555,24 @@ document.getElementById('th-category').addEventListener('click', () => {
   sortDetailTaskList();
 });
 
+function alternaTaskShouldAppear(id, rawLinkedIds, log, today) {
+  const linkedIds = rawLinkedIds.filter(lid => detailTaskList.querySelector(`[data-id="${lid}"]`));
+  if (linkedIds.length === 0) return true;
+
+  // Si alguna tarea del grupo ya apareció hoy, ceder el turno
+  if (linkedIds.some(lid => log[lid] === today)) return false;
+
+  // Round-robin: aparece la tarea que lleva más tiempo sin aparecer
+  const group = [id, ...linkedIds];
+  const turnId = group.reduce((oldest, taskId) => {
+    const dateOldest = log[oldest] ?? '';
+    const dateThis   = log[taskId] ?? '';
+    return dateThis < dateOldest ? taskId : oldest;
+  });
+
+  return id === turnId;
+}
+
 function syncRecurringTasks() {
   const today = todayStr();
   const todayWeekday = new Date().getDay().toString();
@@ -572,6 +605,11 @@ function syncRecurringTasks() {
       if (startDate.slice(5) !== today.slice(5)) return;
       const years = new Date(today).getFullYear() - new Date(startDate).getFullYear();
       if (years % 2 !== 0) return;
+    }
+
+    if (li.dataset.alternaTareas === 'true') {
+      const rawLinkedIds = li.dataset.linkedTasks ? JSON.parse(li.dataset.linkedTasks) : [];
+      if (!alternaTaskShouldAppear(id, rawLinkedIds, log, today)) return;
     }
 
     const pendingExists = Array.from(taskList.querySelectorAll('.task-item:not(.done)')).some(
@@ -831,7 +869,12 @@ const editWeekday      = document.getElementById('edit-weekday');
 const editWeekdayGroup = document.getElementById('edit-weekday-group');
 const editCategory     = document.getElementById('edit-category');
 const editCategoryDot  = document.getElementById('edit-category-dot');
-const editAlternaTareas = document.getElementById('edit-alterna-tareas');
+const editAlternaTareas      = document.getElementById('edit-alterna-tareas');
+const editAlternaTareasGroup = document.getElementById('edit-alterna-tareas-group');
+const editLinkedTasksGroup   = document.getElementById('edit-linked-tasks-group');
+const editLinkedTasksList    = document.getElementById('edit-linked-tasks-list');
+
+const alternaRepeatValues = new Set(['daily', 'weekly']);
 
 const quillOptions = {
   theme: 'bubble',
@@ -939,6 +982,19 @@ document.getElementById('edit-panel-delete-btn').addEventListener('click', () =>
 });
 editRepeat.addEventListener('change', () => {
   editWeekdayGroup.hidden = editRepeat.value !== 'weekly';
+  const compatible = alternaRepeatValues.has(editRepeat.value);
+  editAlternaTareasGroup.hidden = !compatible;
+  if (!compatible && editAlternaTareas.checked) {
+    editAlternaTareas.checked = false;
+    clearLinkedTasks();
+    editLinkedTasksGroup.hidden = true;
+    saveDetailTasks();
+  } else if (compatible && editAlternaTareas.checked) {
+    populateLinkedTasksList();
+  }
+});
+editWeekday.addEventListener('change', () => {
+  if (editAlternaTareas.checked) populateLinkedTasksList();
 });
 editCategory.addEventListener('change', updateEditCategoryDot);
 
@@ -947,6 +1003,112 @@ document.addEventListener('keydown', (e) => {
     if (!planModalOverlay.hidden) closePlanModal();
     else if (hoyDetailPanel.classList.contains('open')) closeHoyPanel();
     else closeEditPanel();
+  }
+});
+
+function clearLinkedTasks() {
+  const currentTr = detailTaskList.querySelector(`[data-id="${editingId}"]`);
+  if (!currentTr) return;
+  const linked = currentTr.dataset.linkedTasks ? JSON.parse(currentTr.dataset.linkedTasks) : [];
+  linked.forEach(linkedId => {
+    const linkedTr = detailTaskList.querySelector(`[data-id="${linkedId}"]`);
+    if (!linkedTr) return;
+    let linkedLinked = linkedTr.dataset.linkedTasks ? JSON.parse(linkedTr.dataset.linkedTasks) : [];
+    linkedLinked = linkedLinked.filter(id => id !== editingId);
+    linkedTr.dataset.linkedTasks = JSON.stringify(linkedLinked);
+    if (linkedLinked.length === 0) linkedTr.dataset.alternaTareas = 'false';
+  });
+  currentTr.dataset.linkedTasks = JSON.stringify([]);
+}
+
+function populateLinkedTasksList() {
+  const currentId     = editingId;
+  const currentRepeat = editRepeat.value;
+  const currentWeekday = currentRepeat === 'weekly' ? editWeekday.value : '';
+  const currentTr     = detailTaskList.querySelector(`[data-id="${currentId}"]`);
+  const linked        = currentTr?.dataset.linkedTasks ? JSON.parse(currentTr.dataset.linkedTasks) : [];
+
+  const compatible = Array.from(detailTaskList.querySelectorAll('.detail-task-item')).filter(tr => {
+    if (tr.dataset.id === currentId) return false;
+    const repeatEl = tr.querySelector('.detail-task-repeat');
+    const repeat   = repeatEl?.dataset.value ?? '';
+    const weekday  = repeatEl?.dataset.weekday ?? '';
+    if (repeat !== currentRepeat) return false;
+    if (currentRepeat === 'weekly' && weekday !== currentWeekday) return false;
+    return true;
+  });
+
+  editLinkedTasksList.innerHTML = '';
+  if (compatible.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'linked-tasks-empty';
+    empty.textContent = 'No hay tareas con la misma repetición.';
+    editLinkedTasksList.appendChild(empty);
+    return;
+  }
+
+  compatible.forEach(taskTr => {
+    const taskId = taskTr.dataset.id;
+    const title  = taskTr.querySelector('.detail-task-title').textContent;
+
+    const item = document.createElement('label');
+    item.className = 'linked-task-item';
+
+    const checkbox = document.createElement('input');
+    checkbox.type      = 'checkbox';
+    checkbox.className = 'linked-task-checkbox';
+    checkbox.checked   = linked.includes(taskId);
+
+    const span = document.createElement('span');
+    span.className   = 'linked-task-label';
+    span.textContent = title;
+
+    item.append(checkbox, span);
+    editLinkedTasksList.appendChild(item);
+
+    checkbox.addEventListener('change', () => handleLinkedTaskChange(taskId, checkbox.checked));
+  });
+}
+
+function handleLinkedTaskChange(linkedId, isChecked) {
+  const currentTr = detailTaskList.querySelector(`[data-id="${editingId}"]`);
+  const linkedTr  = detailTaskList.querySelector(`[data-id="${linkedId}"]`);
+  if (!currentTr || !linkedTr) return;
+
+  if (isChecked) currentTr.dataset.alternaTareas = 'true';
+
+  let currentLinked = currentTr.dataset.linkedTasks ? JSON.parse(currentTr.dataset.linkedTasks) : [];
+  if (isChecked) {
+    if (!currentLinked.includes(linkedId)) currentLinked.push(linkedId);
+  } else {
+    currentLinked = currentLinked.filter(id => id !== linkedId);
+  }
+  currentTr.dataset.linkedTasks = JSON.stringify(currentLinked);
+
+  let linkedLinked = linkedTr.dataset.linkedTasks ? JSON.parse(linkedTr.dataset.linkedTasks) : [];
+  if (isChecked) {
+    linkedTr.dataset.alternaTareas = 'true';
+    if (!linkedLinked.includes(editingId)) linkedLinked.push(editingId);
+  } else {
+    linkedLinked = linkedLinked.filter(id => id !== editingId);
+    if (linkedLinked.length === 0) linkedTr.dataset.alternaTareas = 'false';
+  }
+  linkedTr.dataset.linkedTasks = JSON.stringify(linkedLinked);
+
+  saveDetailTasks();
+}
+
+editAlternaTareas.addEventListener('change', () => {
+  if (editAlternaTareas.checked) {
+    const currentTr = detailTaskList.querySelector(`[data-id="${editingId}"]`);
+    if (currentTr) currentTr.dataset.alternaTareas = 'true';
+    populateLinkedTasksList();
+    editLinkedTasksGroup.hidden = false;
+    saveDetailTasks();
+  } else {
+    clearLinkedTasks();
+    editLinkedTasksGroup.hidden = true;
+    saveDetailTasks();
   }
 });
 
@@ -984,6 +1146,8 @@ function applyDetailTaskEdit(id) {
 
   const chipEl = tr.querySelector('.category-chip');
   chipEl.textContent = categoryNames[category] ?? category;
+
+  tr.querySelector('.detail-task-alterna-cell').textContent = editAlternaTareas.checked ? 'Sí' : 'No';
 
   sortDetailTaskList();
   saveDetailTasks();
@@ -1041,7 +1205,7 @@ function startFirebaseListeners() {
   if (data) {
     data.forEach(t => {
       const repeat = (t.repeat === 'never' || !t.repeat) ? 'daily' : t.repeat;
-      addDetailTask(t.title, t.date, repeat, t.weekday ?? '', t.id ?? null, t.category ?? '', t.description ?? '', t.subtasks ?? [], t.owner ?? 'cristina', t.link ?? '', t.checklistState ?? [], false, t.alternaTareas ?? false);
+      addDetailTask(t.title, t.date, repeat, t.weekday ?? '', t.id ?? null, t.category ?? '', t.description ?? '', t.subtasks ?? [], t.owner ?? 'cristina', t.link ?? '', t.checklistState ?? [], false, t.alternaTareas ?? false, t.linkedTasks ?? []);
     });
     sortDetailTaskList();
   }
