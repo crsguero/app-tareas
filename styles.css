@@ -1711,14 +1711,10 @@ h1 {
     padding: 0 0 10px !important;
   }
 
-  .detail-task-date-cell  { display: none; }
-  .detail-task-owner-cell { display: none; }
-
-  .detail-task-cat-cell {
-    flex-shrink: 0;
-    padding: 12px 0 4px !important;
-    text-align: right;
-  }
+  .detail-task-date-cell      { display: none; }
+  .detail-task-owner-cell     { display: none; }
+  .detail-task-alterna-cell   { display: none; }
+  .detail-task-cat-cell       { display: none; }
 
   #hoy-detail-panel {
     position: fixed;
