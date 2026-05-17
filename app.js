@@ -487,8 +487,8 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   tr.appendChild(ownerCell);
   tr.appendChild(repeatCell);
   tr.appendChild(dateCell);
-  tr.appendChild(catCell);
   tr.appendChild(alternaCell);
+  tr.appendChild(catCell);
   detailTaskList.appendChild(tr);
   if (save) sortDetailTaskList();
 
@@ -500,60 +500,22 @@ const repeatOrder  = { daily: 0, weekly: 1, monthly: 2, quarterly: 3, yearly: 4,
 const weekdayOrder = { '1': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '0': 6 };
 const categoryOrder = { hogar: 0, personal: 1, salud: 2 };
 
-let sortState = { col: 'repeat', dir: 'asc' };
-
 function sortDetailTaskList() {
-  const { col, dir } = sortState;
-  const sign = dir === 'asc' ? 1 : -1;
-
   Array.from(detailTaskList.querySelectorAll('.detail-task-item'))
     .sort((a, b) => {
-      if (col === 'category') {
-        const cA = categoryOrder[a.dataset.category ?? ''] ?? 99;
-        const cB = categoryOrder[b.dataset.category ?? ''] ?? 99;
-        return (cA - cB) * sign;
-      }
       const rA = a.querySelector('.detail-task-repeat')?.dataset.value ?? 'daily';
       const rB = b.querySelector('.detail-task-repeat')?.dataset.value ?? 'daily';
-      const ro = ((repeatOrder[rA] ?? 99) - (repeatOrder[rB] ?? 99)) * sign;
+      const ro = (repeatOrder[rA] ?? 99) - (repeatOrder[rB] ?? 99);
       if (ro !== 0) return ro;
       if (rA === 'weekly') {
         const wA = weekdayOrder[a.querySelector('.detail-task-repeat')?.dataset.weekday ?? '0'] ?? 6;
         const wB = weekdayOrder[b.querySelector('.detail-task-repeat')?.dataset.weekday ?? '0'] ?? 6;
-        return (wA - wB) * sign;
+        return wA - wB;
       }
       return 0;
     })
     .forEach(tr => detailTaskList.appendChild(tr));
-
-  updateSortIndicators();
 }
-
-function updateSortIndicators() {
-  const thRepeat   = document.getElementById('th-repeat');
-  const thCategory = document.getElementById('th-category');
-  if (!thRepeat || !thCategory) return;
-
-  thRepeat.querySelector('.sort-indicator').textContent   = sortState.col === 'repeat'   ? (sortState.dir === 'asc' ? '↑' : '↓') : '↕';
-  thCategory.querySelector('.sort-indicator').textContent = sortState.col === 'category' ? (sortState.dir === 'asc' ? '↑' : '↓') : '↕';
-
-  thRepeat.classList.toggle('th-active',   sortState.col === 'repeat');
-  thCategory.classList.toggle('th-active', sortState.col === 'category');
-}
-
-document.getElementById('th-repeat').addEventListener('click', () => {
-  sortState = sortState.col === 'repeat'
-    ? { col: 'repeat', dir: sortState.dir === 'asc' ? 'desc' : 'asc' }
-    : { col: 'repeat', dir: 'asc' };
-  sortDetailTaskList();
-});
-
-document.getElementById('th-category').addEventListener('click', () => {
-  sortState = sortState.col === 'category'
-    ? { col: 'category', dir: sortState.dir === 'asc' ? 'desc' : 'asc' }
-    : { col: 'category', dir: 'asc' };
-  sortDetailTaskList();
-});
 
 function alternaTaskShouldAppear(id, rawLinkedIds, log, today) {
   const linkedIds = rawLinkedIds.filter(lid => detailTaskList.querySelector(`[data-id="${lid}"]`));
@@ -955,6 +917,8 @@ function openEditPanel() {
   const desc = li?.dataset.description ?? '';
   quill.clipboard.dangerouslyPasteHTML(desc);
   editOwner.value = li?.dataset.owner ?? 'cristina';
+  detailTaskList.querySelectorAll('.detail-task-item--selected').forEach(tr => tr.classList.remove('detail-task-item--selected'));
+  if (li) li.classList.add('detail-task-item--selected');
   editPanel.classList.add('open');
   editTitle.focus();
 }
@@ -962,6 +926,7 @@ function openEditPanel() {
 function closeEditPanel() {
   editPanel.classList.remove('open');
   editMenuDropdown.hidden = true;
+  detailTaskList.querySelectorAll('.detail-task-item--selected').forEach(tr => tr.classList.remove('detail-task-item--selected'));
   editingId = null;
 }
 

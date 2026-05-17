@@ -489,16 +489,20 @@ body {
 .plan-tabs {
   display: flex;
   gap: 4px;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .plan-tab {
-  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
   border: none;
-  border-radius: 8px;
-  background: transparent;
+  border-radius: 24px;
+  background: white;
   color: var(--secondary);
   font-size: 14px;
+  line-height: 18px;
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
@@ -1321,12 +1325,11 @@ h1 {
 .plan-table thead th {
   padding: 8px 12px;
   text-align: left;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border-bottom: 2px solid #e8e8e8;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--secondary);
+  border-bottom: 1px solid var(--tertiary);
 }
 
 
@@ -1362,10 +1365,20 @@ h1 {
   background: #fafafa;
 }
 
+.detail-task-item--selected td {
+  background: var(--quinary);
+}
+
 .detail-task-item td {
   padding: 12px;
   border-bottom: 1px solid #f0f0f0;
   vertical-align: middle;
+}
+
+.detail-task-alterna-cell {
+  font-size: 14px;
+  line-height: 18px;
+  color: #1c1c1c;
 }
 
 .detail-task-name-cell {
@@ -1373,7 +1386,8 @@ h1 {
 }
 
 .detail-task-title {
-  font-size: 0.95rem;
+  font-size: 15px;
+  line-height: 24px;
   color: #1c1c1c;
   font-weight: 500;
 }
@@ -1383,12 +1397,14 @@ h1 {
 }
 
 .detail-task-repeat {
-  font-size: 0.85rem;
+  font-size: 14px;
+  line-height: 18px;
   color: #1c1c1c;
 }
 
 .detail-task-date-cell {
-  font-size: 0.85rem;
+  font-size: 14px;
+  line-height: 18px;
   color: #1c1c1c;
   white-space: nowrap;
 }
@@ -1397,7 +1413,8 @@ h1 {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.85rem;
+  font-size: 14px;
+  line-height: 18px;
   color: #1c1c1c;
   white-space: nowrap;
 }

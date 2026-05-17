@@ -130,7 +130,15 @@
         </header>
 
         <div class="plan-tabs" id="plan-tabs">
-          <button class="plan-tab plan-tab--active" data-filter="all">Todo</button>
+          <button class="plan-tab plan-tab--active" data-filter="all">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.66667 2H2V6.66667H6.66667V2Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M14 2H9.33334V6.66667H14V2Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M14 9.33325H9.33334V13.9999H14V9.33325Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6.66667 9.33325H2V13.9999H6.66667V9.33325Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Todo
+          </button>
           <button class="plan-tab" data-filter="hogar">Hogar</button>
           <button class="plan-tab" data-filter="personal">Personal</button>
           <button class="plan-tab" data-filter="salud">Salud</button>
@@ -140,12 +148,12 @@
             <table id="detail-task-table" class="plan-table">
               <thead>
                 <tr>
-                  <th>Nombre</th>
+                  <th>Título</th>
                   <th>Responsable</th>
-                  <th id="th-repeat" class="th-sortable">Repetición <span class="sort-indicator">↕</span></th>
-                  <th>Día de inicio</th>
-                  <th id="th-category" class="th-sortable">Categoría <span class="sort-indicator">↕</span></th>
+                  <th>Repetición</th>
+                  <th>Fecha de inicio</th>
                   <th>Alternada</th>
+                  <th>Categoría</th>
                 </tr>
               </thead>
               <tbody id="detail-task-list"></tbody>
