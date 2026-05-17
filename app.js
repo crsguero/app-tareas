@@ -28,8 +28,6 @@ const hoyMenuBtn         = document.getElementById('hoy-menu-btn');
 const hoyMenuDropdown    = document.getElementById('hoy-menu-dropdown');
 const hoyPanelDescField       = document.getElementById('hoy-panel-desc-field');
 const hoyPanelDescPlaceholder = document.getElementById('hoy-panel-desc-placeholder');
-const editSubtasksList   = document.getElementById('edit-subtasks-list');
-const editAddSubtask     = document.getElementById('edit-add-subtask');
 let hoyActiveLi    = null;
 let hoyActivePlanLi = null;
 
@@ -85,6 +83,7 @@ function restoreNavState() {
 document.querySelectorAll('.nav-item').forEach(btn => {
   btn.addEventListener('click', () => {
     closeHoyPanel();
+    closeEditPanel();
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const target = btn.dataset.view;
@@ -218,6 +217,7 @@ function saveDetailTasks() {
     owner: tr.dataset.owner ?? 'cristina',
     link:  tr.dataset.link  ?? '',
     checklistState: tr.dataset.checklistState ? JSON.parse(tr.dataset.checklistState) : [],
+    alternaTareas: tr.dataset.alternaTareas === 'true',
   }));
   db.ref('detail-tasks').set(tasks.length ? tasks : null);
 }
@@ -360,45 +360,29 @@ const weekdayGroup    = document.getElementById('weekday-group');
 const detailTaskList  = document.getElementById('detail-task-list');
 const detailEmptyState = document.getElementById('detail-empty-state');
 
+let detailFilter = 'all';
+
+function applyDetailFilter() {
+  document.querySelectorAll('.detail-task-item').forEach(tr => {
+    tr.hidden = detailFilter !== 'all' && tr.dataset.category !== detailFilter;
+  });
+  updateDetailEmptyState();
+}
+
+document.querySelectorAll('.plan-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    detailFilter = btn.dataset.filter;
+    document.querySelectorAll('.plan-tab').forEach(b => b.classList.remove('plan-tab--active'));
+    btn.classList.add('plan-tab--active');
+    applyDetailFilter();
+  });
+});
+
 function updateDetailEmptyState() {
-  detailEmptyState.hidden = detailTaskList.children.length > 0;
+  const visible = Array.from(detailTaskList.children).filter(tr => !tr.hidden).length;
+  detailEmptyState.hidden = visible > 0;
 }
 
-function addSubtaskRow(text = '') {
-  const li = document.createElement('li');
-  li.className = 'subtask-item';
-  li.dataset.id = Date.now().toString() + Math.random().toString(36).slice(2);
-
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.className = 'subtask-input';
-  input.placeholder = 'Nombre de la subtarea';
-  input.value = text;
-  input.maxLength = 200;
-
-  const removeBtn = document.createElement('button');
-  removeBtn.type = 'button';
-  removeBtn.className = 'subtask-remove';
-  removeBtn.setAttribute('aria-label', 'Eliminar subtarea');
-  removeBtn.textContent = '×';
-  removeBtn.addEventListener('click', () => li.remove());
-
-  li.append(input, removeBtn);
-  editSubtasksList.appendChild(li);
-  if (!text) input.focus();
-}
-
-function renderSubtasks(subtasks) {
-  editSubtasksList.innerHTML = '';
-  subtasks.forEach(s => addSubtaskRow(s.text));
-}
-
-function getSubtasks() {
-  return Array.from(editSubtasksList.querySelectorAll('.subtask-item')).map(li => ({
-    id: li.dataset.id,
-    text: li.querySelector('.subtask-input').value.trim(),
-  })).filter(s => s.text);
-}
 
 const ownerMeta = {
   cristina: { label: 'Cristina', initial: 'C', color: '#7c3aed' },
@@ -413,7 +397,6 @@ function buildOwnerAvatar(owner) {
   const avatar = document.createElement('span');
   avatar.className = 'owner-avatar';
   avatar.textContent = meta.initial;
-  avatar.style.background = meta.color;
 
   const name = document.createElement('span');
   name.textContent = meta.label;
@@ -422,7 +405,7 @@ function buildOwnerAvatar(owner) {
   return wrap;
 }
 
-function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, category = '', description = '', subtasks = [], owner = 'cristina', link = '', checklistState = [], save = true) {
+function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, category = '', description = '', subtasks = [], owner = 'cristina', link = '', checklistState = [], save = true, alternaTareas = false) {
   const trimmed = title.trim();
   if (!trimmed) return;
 
@@ -436,6 +419,7 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   if (owner) tr.dataset.owner = owner;
   if (link)  tr.dataset.link  = link;
   if (checklistState?.length) tr.dataset.checklistState = JSON.stringify(checklistState);
+  tr.dataset.alternaTareas = alternaTareas ? 'true' : 'false';
 
   const nameCell = document.createElement('td');
   nameCell.className = 'detail-task-name-cell';
@@ -464,8 +448,6 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   const chipEl = document.createElement('span');
   chipEl.className = 'category-chip';
   chipEl.textContent = categoryNames[category] ?? category;
-  chipEl.style.background = categoryPastels[category] ?? '#f0f0f0';
-  chipEl.style.color = categoryColors[category] ?? '#666';
   catCell.appendChild(chipEl);
 
   tr.addEventListener('click', (e) => {
@@ -478,6 +460,7 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
     editRepeat.value   = rEl?.dataset.value ?? 'daily';
     editWeekday.value  = rEl?.dataset.weekday || '1';
     editWeekdayGroup.hidden = editRepeat.value !== 'weekly';
+    editAlternaTareas.checked = tr.dataset.alternaTareas === 'true';
     updateEditCategoryDot();
     openEditPanel();
   });
@@ -618,7 +601,6 @@ const categoryDot     = document.getElementById('category-dot');
 const detailOwner     = document.getElementById('detail-owner');
 const detailLink      = document.getElementById('detail-link');
 const editOwner       = document.getElementById('edit-owner');
-const editLink        = document.getElementById('edit-link');
 
 function updateCategoryDot() {
   categoryDot.style.background = categoryColors[detailCategory.value] ?? 'transparent';
@@ -813,6 +795,7 @@ hoyMenuBtn.addEventListener('click', (e) => {
 
 document.addEventListener('click', () => {
   if (!hoyMenuDropdown.hidden) hoyMenuDropdown.hidden = true;
+  if (!editMenuDropdown.hidden) editMenuDropdown.hidden = true;
 });
 
 document.getElementById('hoy-panel-complete-btn').addEventListener('click', () => {
@@ -838,6 +821,8 @@ hoyPanelDeleteBtn.addEventListener('click', () => {
 // --- Panel lateral (editar tarea) ---
 const editPanel        = document.getElementById('edit-panel');
 const editPanelClose   = document.getElementById('edit-panel-close');
+const editMenuBtn      = document.getElementById('edit-menu-btn');
+const editMenuDropdown = document.getElementById('edit-menu-dropdown');
 const editForm         = document.getElementById('edit-task-form');
 const editTitle        = document.getElementById('edit-title');
 const editDate         = document.getElementById('edit-date');
@@ -846,6 +831,7 @@ const editWeekday      = document.getElementById('edit-weekday');
 const editWeekdayGroup = document.getElementById('edit-weekday-group');
 const editCategory     = document.getElementById('edit-category');
 const editCategoryDot  = document.getElementById('edit-category-dot');
+const editAlternaTareas = document.getElementById('edit-alterna-tareas');
 
 const quillOptions = {
   theme: 'bubble',
@@ -925,28 +911,30 @@ function openEditPanel() {
   const li = detailTaskList.querySelector(`[data-id="${editingId}"]`);
   const desc = li?.dataset.description ?? '';
   quill.clipboard.dangerouslyPasteHTML(desc);
-  const subtasks = li?.dataset.subtasks ? JSON.parse(li.dataset.subtasks) : [];
-  renderSubtasks(subtasks);
   editOwner.value = li?.dataset.owner ?? 'cristina';
-  editLink.value  = li?.dataset.link  ?? '';
   editPanel.classList.add('open');
   editTitle.focus();
 }
 
 function closeEditPanel() {
   editPanel.classList.remove('open');
+  editMenuDropdown.hidden = true;
   editingId = null;
 }
 
 editPanelClose.addEventListener('click', closeEditPanel);
-editAddSubtask.addEventListener('click', () => addSubtaskRow());
+editMenuBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  editMenuDropdown.hidden = !editMenuDropdown.hidden;
+});
 
-document.getElementById('edit-delete-btn').addEventListener('click', () => {
+document.getElementById('edit-panel-delete-btn').addEventListener('click', () => {
+  if (!confirm('¿Eliminar esta tarea?')) return;
   const li = detailTaskList.querySelector(`[data-id="${editingId}"]`);
   if (!li) return;
   li.remove();
   closeEditPanel();
-  updateDetailEmptyState();
+  applyDetailFilter();
   saveDetailTasks();
 });
 editRepeat.addEventListener('change', () => {
@@ -977,13 +965,8 @@ function applyDetailTaskEdit(id) {
   if (descHtml && descHtml !== '<p><br></p>') tr.dataset.description = descHtml;
   else delete tr.dataset.description;
 
-  const subtasks = getSubtasks();
-  if (subtasks.length) tr.dataset.subtasks = JSON.stringify(subtasks);
-  else delete tr.dataset.subtasks;
-
   tr.dataset.owner = editOwner.value;
-  const linkVal = editLink.value.trim();
-  if (linkVal) tr.dataset.link = linkVal; else delete tr.dataset.link;
+  tr.dataset.alternaTareas = editAlternaTareas.checked ? 'true' : 'false';
   const ownerCellEl = tr.querySelector('.detail-task-owner-cell');
   ownerCellEl.innerHTML = '';
   ownerCellEl.appendChild(buildOwnerAvatar(editOwner.value));
@@ -1001,17 +984,23 @@ function applyDetailTaskEdit(id) {
 
   const chipEl = tr.querySelector('.category-chip');
   chipEl.textContent = categoryNames[category] ?? category;
-  chipEl.style.background = categoryPastels[category] ?? '#f0f0f0';
-  chipEl.style.color = categoryColors[category] ?? '#666';
 
   sortDetailTaskList();
   saveDetailTasks();
 }
 
-editForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  applyDetailTaskEdit(editingId);
-  closeEditPanel();
+function autoSave() {
+  if (editingId) applyDetailTaskEdit(editingId);
+}
+
+let quillSaveTimer = null;
+quill.on('text-change', () => {
+  clearTimeout(quillSaveTimer);
+  quillSaveTimer = setTimeout(autoSave, 500);
+});
+
+[editTitle, editCategory, editOwner, editDate, editRepeat, editWeekday].forEach(el => {
+  el.addEventListener('change', autoSave);
 });
 
 // --- Auth + Firebase real-time listeners ---
@@ -1052,14 +1041,14 @@ function startFirebaseListeners() {
   if (data) {
     data.forEach(t => {
       const repeat = (t.repeat === 'never' || !t.repeat) ? 'daily' : t.repeat;
-      addDetailTask(t.title, t.date, repeat, t.weekday ?? '', t.id ?? null, t.category ?? '', t.description ?? '', t.subtasks ?? [], t.owner ?? 'cristina', t.link ?? '', t.checklistState ?? [], false);
+      addDetailTask(t.title, t.date, repeat, t.weekday ?? '', t.id ?? null, t.category ?? '', t.description ?? '', t.subtasks ?? [], t.owner ?? 'cristina', t.link ?? '', t.checklistState ?? [], false, t.alternaTareas ?? false);
     });
     sortDetailTaskList();
   }
   if (hoyActiveLi?.dataset.seriesId) {
     hoyActivePlanLi = detailTaskList.querySelector(`[data-id="${hoyActiveLi.dataset.seriesId}"]`) ?? null;
   }
-  updateDetailEmptyState();
+  applyDetailFilter();
   updateNavCounts();
 
   if (!detailReady) {

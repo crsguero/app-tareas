@@ -125,15 +125,18 @@
       <!-- Vista: Planificadas -->
       <div id="view-planificadas" class="view" hidden>
         <header class="view-header">
-          <div>
-            <h1>Planificadas</h1>
-            <p class="subtitle">Tareas recurrentes</p>
-          </div>
+          <h1>Planificadas</h1>
           <button id="new-plan-btn">+ Nueva tarea</button>
         </header>
 
-        <div class="plan-body">
-          <div id="detail-task-list-wrapper">
+        <div class="plan-tabs" id="plan-tabs">
+          <button class="plan-tab plan-tab--active" data-filter="all">Todo</button>
+          <button class="plan-tab" data-filter="hogar">Hogar</button>
+          <button class="plan-tab" data-filter="personal">Personal</button>
+          <button class="plan-tab" data-filter="salud">Salud</button>
+        </div>
+
+        <div id="detail-task-list-wrapper">
             <table id="detail-task-table" class="plan-table">
               <thead>
                 <tr>
@@ -150,86 +153,6 @@
               <p>No hay tareas planificadas todavía.</p>
             </div>
           </div>
-
-          <aside id="edit-panel">
-            <div class="edit-panel-inner">
-              <div class="edit-panel-header">
-                <h2>Editar tarea</h2>
-                <button id="edit-panel-close" aria-label="Cerrar">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                  </svg>
-                </button>
-              </div>
-              <form id="edit-task-form">
-                <div class="field-group">
-                  <label for="edit-title">Título</label>
-                  <input type="text" id="edit-title" placeholder="Nombre de la tarea" maxlength="200" autocomplete="off" />
-                </div>
-                <div class="field-group">
-                  <label for="edit-category">Categoría</label>
-                  <div class="select-color-wrap">
-                    <span id="edit-category-dot" class="category-dot"></span>
-                    <select id="edit-category">
-                      <option value="hogar">Hogar</option>
-                      <option value="personal">Personal</option>
-                      <option value="salud">Salud</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="field-group">
-                  <label for="edit-owner">Responsable</label>
-                  <select id="edit-owner">
-                    <option value="cristina">Cristina</option>
-                    <option value="fernando">Fernando</option>
-                  </select>
-                </div>
-                <div class="field-group">
-                  <label for="edit-date">Fecha de inicio</label>
-                  <input type="date" id="edit-date" />
-                </div>
-                <div class="field-group">
-                  <label for="edit-repeat">Repetición</label>
-                  <select id="edit-repeat">
-                    <option value="daily">Diariamente</option>
-                    <option value="weekly">Semanalmente</option>
-                    <option value="monthly">Mensualmente</option>
-                    <option value="quarterly">Trimestralmente</option>
-                    <option value="yearly">Anualmente</option>
-                    <option value="biannually">Cada dos años</option>
-                  </select>
-                </div>
-                <div class="field-group" id="edit-weekday-group" hidden>
-                  <label for="edit-weekday">Día de la semana</label>
-                  <select id="edit-weekday">
-                    <option value="1">Lunes</option>
-                    <option value="2">Martes</option>
-                    <option value="3">Miércoles</option>
-                    <option value="4">Jueves</option>
-                    <option value="5">Viernes</option>
-                    <option value="6">Sábado</option>
-                    <option value="0">Domingo</option>
-                  </select>
-                </div>
-                <div class="field-group">
-                  <label>Subtareas</label>
-                  <ul id="edit-subtasks-list"></ul>
-                  <button type="button" id="edit-add-subtask">+ Añadir subtarea</button>
-                </div>
-                <div class="field-group">
-                  <label>Descripción</label>
-                  <div id="description-editor"></div>
-                </div>
-                <div class="field-group">
-                  <label for="edit-link">Enlace</label>
-                  <input type="url" id="edit-link" placeholder="https://..." autocomplete="off" />
-                </div>
-                <button type="submit" class="detail-add-btn">Guardar cambios</button>
-                <button type="button" id="edit-delete-btn">Eliminar tarea</button>
-              </form>
-            </div>
-          </aside>
-        </div>
       </div>
 
     </main>
@@ -304,6 +227,105 @@
           <div id="hoy-panel-desc-editor"></div>
         </div>
 
+      </div>
+    </aside>
+
+    <aside id="edit-panel">
+      <div class="edit-panel-inner">
+        <div class="edit-panel-header">
+          <button id="edit-panel-close" aria-label="Cerrar" class="hoy-close-btn">
+            <svg class="hoy-close-icon-desktop" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 17L18 12L13 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6 17L11 12L6 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="hoy-close-icon-mobile" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button id="edit-menu-btn" aria-label="Más opciones" class="hoy-menu-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div id="edit-menu-dropdown" class="hoy-menu-dropdown" hidden>
+            <button type="button" id="edit-panel-delete-btn">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.5 5H4.16667H17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M15.8334 4.99996V16.6666C15.8334 17.1087 15.6578 17.5326 15.3453 17.8451C15.0327 18.1577 14.6088 18.3333 14.1667 18.3333H5.83341C5.39139 18.3333 4.96746 18.1577 4.6549 17.8451C4.34234 17.5326 4.16675 17.1087 4.16675 16.6666V4.99996M6.66675 4.99996V3.33329C6.66675 2.89127 6.84234 2.46734 7.1549 2.15478C7.46746 1.84222 7.89139 1.66663 8.33341 1.66663H11.6667C12.1088 1.66663 12.5327 1.84222 12.8453 2.15478C13.1578 2.46734 13.3334 2.89127 13.3334 3.33329V4.99996" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8.33325 9.16663V14.1666" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M11.6667 9.16663V14.1666" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Eliminar tarea
+            </button>
+          </div>
+        </div>
+        <h2 class="hoy-title">Editar tarea</h2>
+        <form id="edit-task-form">
+          <div class="field-group">
+            <label for="edit-title">Título</label>
+            <input type="text" id="edit-title" placeholder="Nombre de la tarea" maxlength="200" autocomplete="off" />
+          </div>
+          <div class="field-group">
+            <label for="edit-category">Categoría</label>
+            <div class="select-color-wrap">
+              <span id="edit-category-dot" class="category-dot"></span>
+              <select id="edit-category">
+                <option value="hogar">Hogar</option>
+                <option value="personal">Personal</option>
+                <option value="salud">Salud</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="edit-owner">Responsable</label>
+            <select id="edit-owner">
+              <option value="cristina">Cristina</option>
+              <option value="fernando">Fernando</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="edit-date">Fecha de inicio</label>
+            <input type="date" id="edit-date" />
+          </div>
+          <div class="field-group">
+            <label for="edit-repeat">Repetición</label>
+            <select id="edit-repeat">
+              <option value="daily">Diariamente</option>
+              <option value="weekly">Semanalmente</option>
+              <option value="monthly">Mensualmente</option>
+              <option value="quarterly">Trimestralmente</option>
+              <option value="yearly">Anualmente</option>
+              <option value="biannually">Cada dos años</option>
+            </select>
+          </div>
+          <div class="field-group" id="edit-weekday-group" hidden>
+            <label for="edit-weekday">Día de la semana</label>
+            <select id="edit-weekday">
+              <option value="1">Lunes</option>
+              <option value="2">Martes</option>
+              <option value="3">Miércoles</option>
+              <option value="4">Jueves</option>
+              <option value="5">Viernes</option>
+              <option value="6">Sábado</option>
+              <option value="0">Domingo</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Alternar tareas</label>
+            <div class="toggle-row">
+              <label class="toggle-switch">
+                <input type="checkbox" id="edit-alterna-tareas" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Descripción</label>
+            <div id="description-editor"></div>
+          </div>
+        </form>
       </div>
     </aside>
 
