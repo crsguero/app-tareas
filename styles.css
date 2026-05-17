@@ -912,7 +912,7 @@ h1 {
 .field-group input:focus,
 .field-group select:focus {
   border-color: #888;
-  background: #fff;
+  background-color: #fff;
 }
 
 .field-group input::placeholder {
@@ -936,18 +936,10 @@ h1 {
 
 .select-color-wrap select {
   flex: 1;
-  padding-left: 30px;
 }
 
 .category-dot {
-  position: absolute;
-  left: 12px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 1;
-  flex-shrink: 0;
+  display: none;
 }
 
 .category-dot--item {
@@ -956,7 +948,8 @@ h1 {
 }
 
 .category-chip {
-  font-size: 0.85rem;
+  font-size: 14px;
+  line-height: 18px;
   color: #1c1c1c;
   white-space: nowrap;
 }
@@ -1090,6 +1083,12 @@ h1 {
   width: 360px;
   padding: 24px;
   box-sizing: border-box;
+}
+
+.edit-panel-divider {
+  border: none;
+  border-top: 1px solid var(--tertiary);
+  margin: 0;
 }
 
 .edit-panel-inner .field-group input,
@@ -1287,6 +1286,14 @@ h1 {
 .ql-editor.ql-blank::before {
   color: #bbb;
   font-style: normal;
+  left: 0;
+}
+
+#description-editor .ql-editor.ql-blank::before {
+  font-style: normal;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--secondary);
   left: 0;
 }
 
