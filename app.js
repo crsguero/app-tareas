@@ -219,6 +219,7 @@ function saveDetailTasks() {
     checklistState: tr.dataset.checklistState ? JSON.parse(tr.dataset.checklistState) : [],
     alternaTareas: tr.dataset.alternaTareas === 'true',
     linkedTasks: tr.dataset.linkedTasks ? JSON.parse(tr.dataset.linkedTasks) : [],
+    enabled: tr.dataset.enabled !== 'false',
   }));
   db.ref('detail-tasks').set(tasks.length ? tasks : null);
 }
@@ -406,12 +407,14 @@ function buildOwnerAvatar(owner) {
   return wrap;
 }
 
-function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, category = '', description = '', subtasks = [], owner = 'cristina', link = '', checklistState = [], save = true, alternaTareas = false, linkedTasks = []) {
+function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, category = '', description = '', subtasks = [], owner = 'cristina', link = '', checklistState = [], save = true, alternaTareas = false, linkedTasks = [], enabled = true) {
   const trimmed = title.trim();
   if (!trimmed) return;
 
   const tr = document.createElement('tr');
   tr.className = 'detail-task-item';
+  if (!enabled) tr.classList.add('detail-task-item--disabled');
+  tr.dataset.enabled = enabled ? 'true' : 'false';
   tr.dataset.id = id ?? Date.now().toString();
   if (date) tr.dataset.date = date;
   if (description) tr.dataset.description = description;
@@ -422,6 +425,25 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   if (checklistState?.length) tr.dataset.checklistState = JSON.stringify(checklistState);
   tr.dataset.alternaTareas = alternaTareas ? 'true' : 'false';
   if (linkedTasks?.length) tr.dataset.linkedTasks = JSON.stringify(linkedTasks);
+
+  const toggleCell = document.createElement('td');
+  toggleCell.className = 'detail-task-toggle-cell';
+  const toggleLabel = document.createElement('label');
+  toggleLabel.className = 'toggle-switch';
+  const toggleInput = document.createElement('input');
+  toggleInput.type = 'checkbox';
+  toggleInput.checked = enabled;
+  const toggleTrack = document.createElement('span');
+  toggleTrack.className = 'toggle-track';
+  toggleLabel.appendChild(toggleInput);
+  toggleLabel.appendChild(toggleTrack);
+  toggleCell.appendChild(toggleLabel);
+  toggleLabel.addEventListener('click', (e) => e.stopPropagation());
+  toggleInput.addEventListener('change', () => {
+    tr.dataset.enabled = toggleInput.checked ? 'true' : 'false';
+    tr.classList.toggle('detail-task-item--disabled', !toggleInput.checked);
+    saveDetailTasks();
+  });
 
   const nameCell = document.createElement('td');
   nameCell.className = 'detail-task-name-cell';
@@ -454,6 +476,7 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
 
   tr.addEventListener('click', (e) => {
     if (e.target.closest('.delete-btn')) return;
+    if (e.target.closest('.detail-task-toggle-cell')) return;
     editingId = tr.dataset.id;
     const rEl = tr.querySelector('.detail-task-repeat');
     editTitle.value    = tr.querySelector('.detail-task-title').textContent;
@@ -483,6 +506,7 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   alternaCell.className = 'detail-task-alterna-cell';
   alternaCell.textContent = alternaTareas ? 'Sí' : 'No';
 
+  tr.appendChild(toggleCell);
   tr.appendChild(nameCell);
   tr.appendChild(ownerCell);
   tr.appendChild(repeatCell);
@@ -535,6 +559,14 @@ function alternaTaskShouldAppear(id, rawLinkedIds, log, today) {
   return id === turnId;
 }
 
+// Fecha (YYYY-MM-DD) de la última vez que ocurrió targetWeekday, contando hoy hacia atrás.
+function lastWeekdayOccurrence(todayStrVal, todayWeekday, targetWeekday) {
+  const back = (parseInt(todayWeekday, 10) - parseInt(targetWeekday, 10) + 7) % 7;
+  const d = new Date(todayStrVal);
+  d.setUTCDate(d.getUTCDate() - back);
+  return d.toISOString().slice(0, 10);
+}
+
 function syncRecurringTasks() {
   const today = todayStr();
   const todayWeekday = new Date().getDay().toString();
@@ -549,10 +581,20 @@ function syncRecurringTasks() {
     const weekday  = repeatEl?.dataset.weekday ?? '';
     const startDate = li.dataset.date ?? '';
 
+    if (li.dataset.enabled === 'false') return; // tarea desactivada: no se añade a las listas
     if (!['daily', 'weekly', 'monthly', 'quarterly', 'yearly', 'biannually'].includes(repeat)) return;
     if (startDate && startDate > today) return;
     if (log[id] === today) return;
-    if (repeat === 'weekly' && weekday !== todayWeekday) return;
+    // Fecha con la que se añadirá la tarea: por defecto hoy, salvo recuperación semanal.
+    let addedDate = today;
+    if (repeat === 'weekly') {
+      if (!weekday) return;
+      // Última ocurrencia de ese día (hoy o ya pasada). Si no se añadió entonces, se recupera ahora.
+      const occ = lastWeekdayOccurrence(today, todayWeekday, weekday);
+      if (startDate && startDate > occ) return; // la ocurrencia es anterior al inicio de la tarea
+      if ((log[id] ?? '') >= occ) return;       // ya se añadió en esa ocurrencia (o posterior)
+      addedDate = occ;                          // conserva la fecha del día en que debía crearse
+    }
     if (repeat === 'monthly' && startDate.slice(8) !== today.slice(8)) return;
     if (repeat === 'quarterly') {
       if (startDate.slice(8) !== today.slice(8)) return;
@@ -579,7 +621,7 @@ function syncRecurringTasks() {
     );
     if (pendingExists) return;
 
-    addTask(li.querySelector('.detail-task-title').textContent, false, { addedDate: today, repeat, weekday, seriesId: id, category: li.dataset.category ?? null, owner: li.dataset.owner ?? 'cristina' });
+    addTask(li.querySelector('.detail-task-title').textContent, false, { addedDate, repeat, weekday, seriesId: id, category: li.dataset.category ?? null, owner: li.dataset.owner ?? 'cristina' });
     log[id] = today;
     logUpdated = true;
     if (li.dataset.checklistState && JSON.parse(li.dataset.checklistState).length) {
@@ -1170,7 +1212,7 @@ function startFirebaseListeners() {
   if (data) {
     data.forEach(t => {
       const repeat = (t.repeat === 'never' || !t.repeat) ? 'daily' : t.repeat;
-      addDetailTask(t.title, t.date, repeat, t.weekday ?? '', t.id ?? null, t.category ?? '', t.description ?? '', t.subtasks ?? [], t.owner ?? 'cristina', t.link ?? '', t.checklistState ?? [], false, t.alternaTareas ?? false, t.linkedTasks ?? []);
+      addDetailTask(t.title, t.date, repeat, t.weekday ?? '', t.id ?? null, t.category ?? '', t.description ?? '', t.subtasks ?? [], t.owner ?? 'cristina', t.link ?? '', t.checklistState ?? [], false, t.alternaTareas ?? false, t.linkedTasks ?? [], t.enabled ?? true);
     });
     sortDetailTaskList();
   }

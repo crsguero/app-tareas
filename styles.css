@@ -1205,6 +1205,16 @@ h1 {
   transform: translateX(18px);
 }
 
+.detail-task-toggle-cell {
+  text-align: center;
+  vertical-align: middle;
+  width: 64px;
+}
+
+.detail-task-item--disabled td:not(.detail-task-toggle-cell) {
+  opacity: 0.4;
+}
+
 .linked-tasks-list {
   display: flex;
   flex-direction: column;
@@ -1709,6 +1719,12 @@ h1 {
     order: 3;
     width: 100%;
     padding: 0 0 10px !important;
+  }
+
+  .detail-task-toggle-cell {
+    width: auto;
+    order: 0;
+    padding: 12px 0 4px !important;
   }
 
   .detail-task-date-cell      { display: none; }
