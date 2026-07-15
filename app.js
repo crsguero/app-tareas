@@ -205,22 +205,26 @@ function saveTasks() {
 }
 
 function saveDetailTasks() {
-  const tasks = Array.from(detailTaskList.querySelectorAll('.detail-task-item')).map(tr => ({
-    id: tr.dataset.id,
-    title: tr.querySelector('.detail-task-title').textContent,
-    date: tr.dataset.date ?? '',
-    repeat: tr.querySelector('.detail-task-repeat')?.dataset.value ?? 'daily',
-    weekday: tr.querySelector('.detail-task-repeat')?.dataset.weekday ?? '',
-    category: tr.dataset.category ?? '',
-    description: tr.dataset.description ?? '',
-    subtasks: tr.dataset.subtasks ? JSON.parse(tr.dataset.subtasks) : [],
-    owner: tr.dataset.owner ?? 'cristina',
-    link:  tr.dataset.link  ?? '',
-    checklistState: tr.dataset.checklistState ? JSON.parse(tr.dataset.checklistState) : [],
-    alternaTareas: tr.dataset.alternaTareas === 'true',
-    linkedTasks: tr.dataset.linkedTasks ? JSON.parse(tr.dataset.linkedTasks) : [],
-    enabled: tr.dataset.enabled !== 'false',
-  }));
+  const tasks = Array.from(detailTaskList.querySelectorAll('.detail-task-item')).map((tr, i) => {
+    tr.dataset.order = i; // el orden persistido refleja la posición actual (incluye drag & drop)
+    return {
+      id: tr.dataset.id,
+      title: tr.querySelector('.detail-task-title').textContent,
+      date: tr.dataset.date ?? '',
+      repeat: tr.querySelector('.detail-task-repeat')?.dataset.value ?? 'daily',
+      weekday: tr.querySelector('.detail-task-repeat')?.dataset.weekday ?? '',
+      category: tr.dataset.category ?? '',
+      description: tr.dataset.description ?? '',
+      subtasks: tr.dataset.subtasks ? JSON.parse(tr.dataset.subtasks) : [],
+      owner: tr.dataset.owner ?? 'cristina',
+      link:  tr.dataset.link  ?? '',
+      checklistState: tr.dataset.checklistState ? JSON.parse(tr.dataset.checklistState) : [],
+      alternaTareas: tr.dataset.alternaTareas === 'true',
+      linkedTasks: tr.dataset.linkedTasks ? JSON.parse(tr.dataset.linkedTasks) : [],
+      enabled: tr.dataset.enabled !== 'false',
+      order: i,
+    };
+  });
   db.ref('detail-tasks').set(tasks.length ? tasks : null);
 }
 
@@ -407,7 +411,7 @@ function buildOwnerAvatar(owner) {
   return wrap;
 }
 
-function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, category = '', description = '', subtasks = [], owner = 'cristina', link = '', checklistState = [], save = true, alternaTareas = false, linkedTasks = [], enabled = true) {
+function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, category = '', description = '', subtasks = [], owner = 'cristina', link = '', checklistState = [], save = true, alternaTareas = false, linkedTasks = [], enabled = true, order = null) {
   const trimmed = title.trim();
   if (!trimmed) return;
 
@@ -415,6 +419,7 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   tr.className = 'detail-task-item';
   if (!enabled) tr.classList.add('detail-task-item--disabled');
   tr.dataset.enabled = enabled ? 'true' : 'false';
+  tr.dataset.order = order ?? Date.now();
   tr.dataset.id = id ?? Date.now().toString();
   if (date) tr.dataset.date = date;
   if (description) tr.dataset.description = description;
@@ -425,6 +430,30 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   if (checklistState?.length) tr.dataset.checklistState = JSON.stringify(checklistState);
   tr.dataset.alternaTareas = alternaTareas ? 'true' : 'false';
   if (linkedTasks?.length) tr.dataset.linkedTasks = JSON.stringify(linkedTasks);
+
+  const dragCell = document.createElement('td');
+  dragCell.className = 'detail-task-drag-cell';
+  const dragHandle = document.createElement('span');
+  dragHandle.className = 'detail-task-drag-handle';
+  dragHandle.textContent = '⠿';
+  dragHandle.title = 'Arrastra para reordenar';
+  dragHandle.setAttribute('draggable', 'true');
+  dragCell.appendChild(dragHandle);
+  dragHandle.addEventListener('click', (e) => e.stopPropagation());
+  dragHandle.addEventListener('dragstart', (e) => {
+    detailDragRow = tr;
+    detailDropped = false;
+    tr.classList.add('detail-task-item--dragging');
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', tr.dataset.id ?? '');
+    }
+  });
+  dragHandle.addEventListener('dragend', () => {
+    tr.classList.remove('detail-task-item--dragging');
+    if (!detailDropped) sortDetailTaskList(); // cancelado: restaura el orden guardado
+    detailDragRow = null;
+  });
 
   const toggleCell = document.createElement('td');
   toggleCell.className = 'detail-task-toggle-cell';
@@ -477,6 +506,7 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   tr.addEventListener('click', (e) => {
     if (e.target.closest('.delete-btn')) return;
     if (e.target.closest('.detail-task-toggle-cell')) return;
+    if (e.target.closest('.detail-task-drag-cell')) return;
     editingId = tr.dataset.id;
     const rEl = tr.querySelector('.detail-task-repeat');
     editTitle.value    = tr.querySelector('.detail-task-title').textContent;
@@ -506,6 +536,7 @@ function addDetailTask(title, date, repeat = 'daily', weekday = '', id = null, c
   alternaCell.className = 'detail-task-alterna-cell';
   alternaCell.textContent = alternaTareas ? 'Sí' : 'No';
 
+  tr.appendChild(dragCell);
   tr.appendChild(toggleCell);
   tr.appendChild(nameCell);
   tr.appendChild(ownerCell);
@@ -524,6 +555,20 @@ const repeatOrder  = { daily: 0, weekly: 1, monthly: 2, quarterly: 3, yearly: 4,
 const weekdayOrder = { '1': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '0': 6 };
 const categoryOrder = { hogar: 0, personal: 1, salud: 2 };
 
+function detailOrderValue(tr) {
+  const v = parseFloat(tr.dataset.order);
+  return Number.isNaN(v) ? Number.MAX_SAFE_INTEGER : v;
+}
+
+// Clave de grupo dentro del cual se permite reordenar con drag & drop.
+// Mismo tipo de repetición; en semanales, además el mismo día.
+function detailGroupKey(tr) {
+  const rEl = tr.querySelector('.detail-task-repeat');
+  const repeat = rEl?.dataset.value ?? 'daily';
+  const weekday = repeat === 'weekly' ? (rEl?.dataset.weekday ?? '') : '';
+  return `${repeat}|${weekday}`;
+}
+
 function sortDetailTaskList() {
   Array.from(detailTaskList.querySelectorAll('.detail-task-item'))
     .sort((a, b) => {
@@ -534,19 +579,41 @@ function sortDetailTaskList() {
       if (rA === 'weekly') {
         const wA = weekdayOrder[a.querySelector('.detail-task-repeat')?.dataset.weekday ?? '0'] ?? 6;
         const wB = weekdayOrder[b.querySelector('.detail-task-repeat')?.dataset.weekday ?? '0'] ?? 6;
-        return wA - wB;
+        if (wA !== wB) return wA - wB;
       }
-      return 0;
+      return detailOrderValue(a) - detailOrderValue(b);
     })
     .forEach(tr => detailTaskList.appendChild(tr));
 }
 
-function alternaTaskShouldAppear(id, rawLinkedIds, log, today) {
+// --- Drag & drop de tareas planificadas (reordena dentro del mismo grupo) ---
+let detailDragRow = null;
+let detailDropped = false;
+
+detailTaskList.addEventListener('dragover', (e) => {
+  if (!detailDragRow) return;
+  e.preventDefault(); // imprescindible para que se dispare el 'drop' al soltar
+  const overRow = e.target.closest?.('.detail-task-item');
+  if (!overRow || overRow === detailDragRow) return;
+  if (detailGroupKey(overRow) !== detailGroupKey(detailDragRow)) return; // solo dentro del grupo
+  const rect = overRow.getBoundingClientRect();
+  const before = (e.clientY - rect.top) < rect.height / 2;
+  detailTaskList.insertBefore(detailDragRow, before ? overRow : overRow.nextSibling);
+});
+
+detailTaskList.addEventListener('drop', (e) => {
+  if (!detailDragRow) return;
+  e.preventDefault();
+  detailDropped = true;
+  saveDetailTasks(); // renumera el orden según la posición actual
+});
+
+function alternaTaskShouldAppear(id, rawLinkedIds, log, occurrenceDate) {
   const linkedIds = rawLinkedIds.filter(lid => detailTaskList.querySelector(`[data-id="${lid}"]`));
   if (linkedIds.length === 0) return true;
 
-  // Si alguna tarea del grupo ya apareció hoy, ceder el turno
-  if (linkedIds.some(lid => log[lid] === today)) return false;
+  // Si alguna tarea del grupo ya ocupó esta ocurrencia (este miércoles), ceder el turno
+  if (linkedIds.some(lid => log[lid] === occurrenceDate)) return false;
 
   // Round-robin: aparece la tarea que lleva más tiempo sin aparecer
   const group = [id, ...linkedIds];
@@ -613,16 +680,23 @@ function syncRecurringTasks() {
 
     if (li.dataset.alternaTareas === 'true') {
       const rawLinkedIds = li.dataset.linkedTasks ? JSON.parse(li.dataset.linkedTasks) : [];
-      if (!alternaTaskShouldAppear(id, rawLinkedIds, log, today)) return;
+      if (!alternaTaskShouldAppear(id, rawLinkedIds, log, addedDate)) return;
     }
 
+    // Ya hay una tarea de esta serie sin completar → no acumular otra.
     const pendingExists = Array.from(taskList.querySelectorAll('.task-item:not(.done)')).some(
       task => task.dataset.seriesId === id
     );
-    if (pendingExists) return;
+    // Esta ocurrencia (misma serie y misma fecha) ya se creó y se completó → no re-añadirla.
+    // Se comprueba contra los datos reales (Firebase), no solo contra el daily-log local.
+    const occurrenceDone = Array.from(completedList.querySelectorAll('.task-item')).some(
+      task => task.dataset.seriesId === id
+        && task.querySelector('.task-byline')?.dataset.addedDate === addedDate
+    );
+    if (pendingExists || occurrenceDone) return;
 
     addTask(li.querySelector('.detail-task-title').textContent, false, { addedDate, repeat, weekday, seriesId: id, category: li.dataset.category ?? null, owner: li.dataset.owner ?? 'cristina' });
-    log[id] = today;
+    log[id] = addedDate; // registra la fecha de la ocurrencia (no la de recarga)
     logUpdated = true;
     if (li.dataset.checklistState && JSON.parse(li.dataset.checklistState).length) {
       li.dataset.checklistState = '[]';
@@ -1210,9 +1284,9 @@ function startFirebaseListeners() {
 
   detailTaskList.innerHTML = '';
   if (data) {
-    data.forEach(t => {
+    data.forEach((t, i) => {
       const repeat = (t.repeat === 'never' || !t.repeat) ? 'daily' : t.repeat;
-      addDetailTask(t.title, t.date, repeat, t.weekday ?? '', t.id ?? null, t.category ?? '', t.description ?? '', t.subtasks ?? [], t.owner ?? 'cristina', t.link ?? '', t.checklistState ?? [], false, t.alternaTareas ?? false, t.linkedTasks ?? [], t.enabled ?? true);
+      addDetailTask(t.title, t.date, repeat, t.weekday ?? '', t.id ?? null, t.category ?? '', t.description ?? '', t.subtasks ?? [], t.owner ?? 'cristina', t.link ?? '', t.checklistState ?? [], false, t.alternaTareas ?? false, t.linkedTasks ?? [], t.enabled ?? true, t.order ?? i);
     });
     sortDetailTaskList();
   }

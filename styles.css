@@ -1215,6 +1215,31 @@ h1 {
   opacity: 0.4;
 }
 
+.detail-task-drag-col,
+.detail-task-drag-cell {
+  width: 28px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.detail-task-drag-handle {
+  display: inline-block;
+  color: var(--tertiary);
+  cursor: grab;
+  font-size: 16px;
+  line-height: 1;
+  user-select: none;
+}
+
+.detail-task-drag-handle:hover {
+  color: var(--secondary);
+}
+
+.detail-task-item--dragging {
+  opacity: 0.5;
+  background: var(--quaternary);
+}
+
 .linked-tasks-list {
   display: flex;
   flex-direction: column;
@@ -1721,12 +1746,8 @@ h1 {
     padding: 0 0 10px !important;
   }
 
-  .detail-task-toggle-cell {
-    width: auto;
-    order: 0;
-    padding: 12px 0 4px !important;
-  }
-
+  .detail-task-toggle-cell    { display: none; }
+  .detail-task-drag-cell      { display: none; }
   .detail-task-date-cell      { display: none; }
   .detail-task-owner-cell     { display: none; }
   .detail-task-alterna-cell   { display: none; }
