@@ -637,7 +637,7 @@ function lastWeekdayOccurrence(todayStrVal, todayWeekday, targetWeekday) {
 function syncRecurringTasks() {
   const today = todayStr();
   const todayWeekday = new Date().getDay().toString();
-  const log = JSON.parse(localStorage.getItem('daily-log') ?? '{}');
+  const log = dailyLog; // registro compartido en Firebase
   let logUpdated = false;
   let needsDetailSave = false;
 
@@ -688,7 +688,6 @@ function syncRecurringTasks() {
       task => task.dataset.seriesId === id
     );
     // Esta ocurrencia (misma serie y misma fecha) ya se creó y se completó → no re-añadirla.
-    // Se comprueba contra los datos reales (Firebase), no solo contra el daily-log local.
     const occurrenceDone = Array.from(completedList.querySelectorAll('.task-item')).some(
       task => task.dataset.seriesId === id
         && task.querySelector('.task-byline')?.dataset.addedDate === addedDate
@@ -704,7 +703,7 @@ function syncRecurringTasks() {
     }
   });
 
-  if (logUpdated) localStorage.setItem('daily-log', JSON.stringify(log));
+  if (logUpdated) db.ref('daily-log').set(log);
   if (needsDetailSave) saveDetailTasks();
 }
 
@@ -1252,11 +1251,13 @@ quill.on('text-change', () => {
 
 let detailReady      = false;
 let tasksReady       = false;
+let logReady         = false;
 let recurringDone    = false;
 let listenersStarted = false;
+let dailyLog         = {}; // registro compartido (Firebase) de ocurrencias ya generadas
 
 function maybeSyncRecurring() {
-  if (detailReady && tasksReady && !recurringDone) {
+  if (detailReady && tasksReady && logReady && !recurringDone) {
     recurringDone = true;
     syncRecurringTasks();
   }
@@ -1265,6 +1266,26 @@ function maybeSyncRecurring() {
 function startFirebaseListeners() {
   if (listenersStarted) return;
   listenersStarted = true;
+
+  db.ref('daily-log').on('value', (snapshot) => {
+    dailyLog = snapshot.val() ?? {};
+    if (!logReady) {
+      // Migración única desde localStorage si en Firebase aún no hay registro.
+      if (!snapshot.val()) {
+        const local = localStorage.getItem('daily-log');
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (Object.keys(parsed).length) {
+            dailyLog = parsed;
+            db.ref('daily-log').set(parsed);
+          }
+        }
+      }
+      localStorage.removeItem('daily-log');
+      logReady = true;
+      maybeSyncRecurring();
+    }
+  });
 
   db.ref('detail-tasks').on('value', (snapshot) => {
   const data = snapshot.val();
