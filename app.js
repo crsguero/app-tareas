@@ -636,6 +636,7 @@ function lastWeekdayOccurrence(todayStrVal, todayWeekday, targetWeekday) {
 
 function syncRecurringTasks() {
   const today = todayStr();
+  lastSyncDate = today; // marca el día ya sincronizado (evita re-ejecuciones el mismo día)
   const todayWeekday = new Date().getDay().toString();
   const log = dailyLog; // registro compartido en Firebase
   let logUpdated = false;
@@ -714,7 +715,6 @@ const categoryNames    = { hogar: 'Hogar', personal: 'Personal', salud: 'Salud' 
 const detailCategory  = document.getElementById('detail-category');
 const categoryDot     = document.getElementById('category-dot');
 const detailOwner     = document.getElementById('detail-owner');
-const detailLink      = document.getElementById('detail-link');
 const editOwner       = document.getElementById('edit-owner');
 
 function updateCategoryDot() {
@@ -741,7 +741,6 @@ function closePlanModal() {
   detailRepeat.value   = 'daily';
   detailCategory.value = 'hogar';
   detailOwner.value    = 'cristina';
-  detailLink.value     = '';
   weekdayGroup.hidden  = true;
   updateCategoryDot();
 }
@@ -768,7 +767,7 @@ detailForm.addEventListener('submit', (e) => {
     '',
     [],
     detailOwner.value,
-    detailLink.value.trim()
+    ''
   );
   closePlanModal();
 });
@@ -1252,16 +1251,25 @@ quill.on('text-change', () => {
 let detailReady      = false;
 let tasksReady       = false;
 let logReady         = false;
-let recurringDone    = false;
+let lastSyncDate     = null; // día (YYYY-MM-DD) de la última sincronización de recurrentes
 let listenersStarted = false;
 let dailyLog         = {}; // registro compartido (Firebase) de ocurrencias ya generadas
 
+// Sincroniza si los datos están listos y aún no se ha sincronizado hoy.
+// Sirve tanto para la primera carga como para re-sincronizar al cambiar de día
+// con la app abierta (las comprobaciones internas evitan duplicados).
 function maybeSyncRecurring() {
-  if (detailReady && tasksReady && logReady && !recurringDone) {
-    recurringDone = true;
+  if (detailReady && tasksReady && logReady && lastSyncDate !== todayStr()) {
     syncRecurringTasks();
   }
 }
+
+// Con la app abierta en el móvil/PWA, el cambio de día no dispara una recarga.
+// Al recuperar el foco o la visibilidad, se comprueba si toca sincronizar.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') maybeSyncRecurring();
+});
+window.addEventListener('focus', maybeSyncRecurring);
 
 function startFirebaseListeners() {
   if (listenersStarted) return;
@@ -1282,6 +1290,17 @@ function startFirebaseListeners() {
         }
       }
       localStorage.removeItem('daily-log');
+      logReady = true;
+      maybeSyncRecurring();
+    }
+  }, (error) => {
+    // Si la lectura de daily-log falla (p. ej. reglas de seguridad de Firebase),
+    // no se debe bloquear toda la generación de tareas: se continúa con un
+    // registro vacío en memoria. Las comprobaciones pendingExists/occurrenceDone
+    // siguen evitando duplicados dentro del día.
+    console.error('[sync] Error leyendo daily-log en Firebase:', error?.message ?? error);
+    if (!logReady) {
+      dailyLog = {};
       logReady = true;
       maybeSyncRecurring();
     }
