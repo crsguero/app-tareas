@@ -393,16 +393,19 @@ body {
 
 #hoy-panel-desc-editor .ql-editor ul[data-checked] > li,
 #hoy-panel-desc-editor.ql-disabled .ql-editor ul[data-checked] > li,
-#hoy-panel-desc-editor.ql-disabled .ql-editor ul[data-checked] > li::before,
-#description-editor .ql-editor ul[data-checked] > li,
-#description-editor.ql-disabled .ql-editor ul[data-checked] > li,
-#description-editor.ql-disabled .ql-editor ul[data-checked] > li::before {
+#hoy-panel-desc-editor.ql-disabled .ql-editor ul[data-checked] > li::before {
   pointer-events: all !important;
   cursor: pointer !important;
 }
 
+/* En el formulario de edición el checkbox es solo de muestra: siempre vacío y
+   no se puede marcar (eso se hace en la ocurrencia de Cristina/Fernando). */
+#description-editor .ql-editor ul[data-checked] > li::before {
+  cursor: default !important;
+}
+
 #hoy-panel-desc-editor .ql-editor ul[data-checked="false"] > li::before,
-#description-editor .ql-editor ul[data-checked="false"] > li::before {
+#description-editor .ql-editor ul[data-checked] > li::before {
   content: '' !important;
   display: inline-block !important;
   width: 16px !important;
@@ -415,8 +418,7 @@ body {
   margin-top: -4px;
 }
 
-#hoy-panel-desc-editor .ql-editor ul[data-checked="true"] > li::before,
-#description-editor .ql-editor ul[data-checked="true"] > li::before {
+#hoy-panel-desc-editor .ql-editor ul[data-checked="true"] > li::before {
   content: '' !important;
   display: inline-block !important;
   width: 16px !important;
@@ -486,10 +488,177 @@ body {
   color: #1c1c1c;
 }
 
+.plan-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
 .plan-tabs {
   display: flex;
   gap: 4px;
-  margin-bottom: 24px;
+}
+
+.plan-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.plan-filter {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 8px 32px 8px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 24px;
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+  color: var(--secondary);
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.plan-filter:hover {
+  border-color: #ccc;
+  color: #1c1c1c;
+}
+
+.plan-filter--active {
+  background-color: var(--quaternary);
+  border-color: var(--quaternary);
+  color: #1c1c1c;
+}
+
+.plan-filter-clear {
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  color: var(--secondary);
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 500;
+  font-family: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.plan-filter-clear:hover {
+  color: #1c1c1c;
+}
+
+/* Tablero semanal (pestaña Semanalmente) */
+.plan-week-board {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(160px, 1fr));
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.plan-week-board[hidden] {
+  display: none;
+}
+
+.plan-week-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--quinary);
+}
+
+.plan-week-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+  color: #1c1c1c;
+}
+
+.plan-week-col-count {
+  font-weight: 500;
+  color: var(--secondary);
+}
+
+.plan-week-col-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.plan-week-col-empty {
+  font-size: 13px;
+  color: #bbb;
+}
+
+.plan-week-col-list:has(.plan-week-card) .plan-week-col-empty {
+  display: none;
+}
+
+.plan-week-col--drop-target {
+  box-shadow: inset 0 0 0 2px var(--brand-primary);
+}
+
+.plan-week-card--dragging {
+  opacity: 0.5;
+}
+
+.plan-week-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--tertiary);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  animation: slide-in 0.2s ease;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.plan-week-card:hover {
+  border-color: #ccc;
+}
+
+.plan-week-card:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 1px;
+}
+
+.plan-week-card--selected {
+  border-color: #1c1c1c;
+}
+
+.plan-week-card-title {
+  font-size: 14px;
+  line-height: 18px;
+  color: #1c1c1c;
+  overflow-wrap: anywhere;
+}
+
+.plan-week-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .plan-week-board {
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+  }
 }
 
 .plan-tab {
@@ -926,32 +1095,6 @@ h1 {
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 32px;
-}
-
-.select-color-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.select-color-wrap select {
-  flex: 1;
-}
-
-.category-dot {
-  display: none;
-}
-
-.category-dot--item {
-  position: static;
-  flex-shrink: 0;
-}
-
-.category-chip {
-  font-size: 14px;
-  line-height: 18px;
-  color: #1c1c1c;
-  white-space: nowrap;
 }
 
 .detail-add-btn {
@@ -1436,6 +1579,45 @@ h1 {
   color: #1c1c1c;
 }
 
+.detail-task-cat-cell {
+  font-size: 14px;
+  line-height: 18px;
+  color: #1c1c1c;
+  white-space: nowrap;
+}
+
+.detail-task-cat-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border: none;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--brand-primary) 20%, white);
+  color: color-mix(in srgb, var(--brand-primary) 35%, #1c1c1c);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.detail-task-cat-link:hover {
+  background: color-mix(in srgb, var(--brand-primary) 35%, white);
+}
+
+.detail-task-owner-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.detail-task-owner-link:hover .owner-cell > span:last-child {
+  text-decoration: underline;
+}
+
 .detail-task-name-cell {
   min-width: 160px;
 }
@@ -1796,4 +1978,1347 @@ h1 {
     width: 100%;
     padding: 24px;
   }
+}
+
+/* ==========================================================================
+   Reparto — UI propia de esta pestaña (tokens y estilos aislados con .rp / rp-)
+   ========================================================================== */
+
+.rp {
+  --rp-bg: #ffffff;
+  --rp-surface: #ffffff;
+  --rp-line: #e8e8ec;
+  --rp-line-soft: #f1f1f4;
+  --rp-ink: #16161a;
+  --rp-ink-soft: #6b6b76;
+  --rp-ink-faint: #9a9aa5;
+  --rp-accent: #4f46e5;
+  --rp-accent-soft: #eef2ff;
+  --rp-hover: #fafafb;
+  --rp-radius: 14px;
+  --rp-shadow: 0 1px 2px rgba(16, 16, 26, 0.04), 0 8px 24px rgba(16, 16, 26, 0.06);
+
+  max-width: 1080px;
+  font-size: 14px;
+  color: var(--rp-ink);
+  letter-spacing: -0.01em;
+}
+
+/* Header */
+.rp-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.rp-heading h1 {
+  font-size: 26px;
+  line-height: 32px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--rp-ink);
+}
+
+.rp-heading p {
+  margin-top: 4px;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--rp-ink-soft);
+}
+
+/* Botones */
+.rp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 550;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.rp-btn--primary {
+  background: var(--rp-ink);
+  color: #fff;
+}
+
+.rp-btn--primary:hover { background: #2c2c34; }
+
+.rp-btn:focus-visible {
+  outline: 2px solid var(--rp-accent);
+  outline-offset: 2px;
+}
+
+/* Tarjeta / tabla */
+.rp-card {
+  background: var(--rp-surface);
+  border: 1px solid var(--rp-line);
+  border-radius: var(--rp-radius);
+  box-shadow: var(--rp-shadow);
+  overflow: hidden;
+}
+
+.rp-scroll {
+  overflow-x: auto;
+}
+
+.rp-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+}
+
+.rp-table thead th {
+  position: sticky;
+  top: 0;
+  background: #fbfbfc;
+  border-bottom: 1px solid var(--rp-line);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rp-ink-faint);
+  white-space: nowrap;
+}
+
+.rp-col-grip         { width: 32px; }
+.rp-col-task         { width: 26%; }
+.rp-col-instructions { width: 110px; }
+.rp-col-owner        { width: 15%; }
+.rp-col-freq         { width: 15%; }
+.rp-col-routine      { width: 30%; }
+.rp-col-duplicate    { width: 44px; }
+
+/* Filas: solo lectura, se abren en el modal */
+.rp-table tbody tr {
+  border-bottom: 1px solid var(--rp-line-soft);
+  cursor: pointer;
+}
+
+.rp-table tbody tr:last-child { border-bottom: none; }
+.rp-table tbody tr:hover { background: var(--rp-hover); }
+
+.rp-table tbody tr:focus-visible {
+  outline: 2px solid var(--rp-accent);
+  outline-offset: -2px;
+}
+
+.rp-table td {
+  padding: 12px 14px;
+  vertical-align: middle;
+}
+
+.rp-cell-task {
+  font-weight: 550;
+  color: var(--rp-ink);
+}
+
+.rp-cell-freq { color: var(--rp-ink-soft); }
+
+.rp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Duplicar fila: solo al pasar el ratón (o con foco de teclado) */
+.rp-row-duplicate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--rp-ink-faint);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.rp-table tbody tr:hover .rp-row-duplicate,
+.rp-row-duplicate:focus-visible { opacity: 1; }
+
+.rp-row-duplicate:hover {
+  background: var(--rp-accent-soft);
+  color: var(--rp-accent);
+}
+
+.rp-row-duplicate:focus-visible {
+  outline: 2px solid var(--rp-accent);
+  outline-offset: 1px;
+}
+
+.rp-visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Campo de texto del modal */
+.rp-field-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--rp-line);
+  border-radius: 9px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  color: var(--rp-ink);
+}
+
+.rp-field-input::placeholder { color: var(--rp-ink-faint); }
+
+.rp-field-input:focus {
+  outline: none;
+  border-color: var(--rp-accent);
+  box-shadow: 0 0 0 3px var(--rp-accent-soft);
+}
+
+/* Disparador de desplegable (responsable, rutina) */
+.rp-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 34px;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  color: var(--rp-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.rp-trigger:hover { border-color: var(--rp-line); }
+
+.rp-trigger:focus-visible,
+.rp-trigger[aria-expanded="true"] {
+  outline: none;
+  background: #fff;
+  border-color: var(--rp-accent);
+  box-shadow: 0 0 0 3px var(--rp-accent-soft);
+}
+
+.rp-trigger-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.rp-trigger-chevron {
+  flex-shrink: 0;
+  color: var(--rp-ink-faint);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.rp-trigger:hover .rp-trigger-chevron,
+.rp-trigger[aria-expanded="true"] .rp-trigger-chevron { opacity: 1; }
+
+.rp-placeholder { color: var(--rp-ink-faint); }
+
+/* Persona */
+.rp-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 500;
+}
+
+.rp-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--rp-avatar-bg, #7c3aed);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 650;
+  flex-shrink: 0;
+}
+
+.rp-avatar-stack {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.rp-avatar-stack .rp-avatar + .rp-avatar {
+  margin-left: -8px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+/* Chips de rutina */
+.rp-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--rp-accent-soft);
+  color: #3730a3;
+  font-size: 12.5px;
+  font-weight: 550;
+  line-height: 17px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rp-chip--muted {
+  background: var(--rp-line-soft);
+  color: var(--rp-ink-soft);
+}
+
+/* Estado vacío */
+.rp-empty {
+  padding: 56px 24px 60px;
+  text-align: center;
+}
+
+.rp-empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 14px;
+  border-radius: 14px;
+  background: var(--rp-accent-soft);
+  color: var(--rp-accent);
+}
+
+.rp-empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--rp-ink);
+}
+
+.rp-empty-text {
+  margin: 4px 0 18px;
+  font-size: 13.5px;
+  color: var(--rp-ink-soft);
+}
+
+/* Desplegable flotante */
+.rp-popover {
+  position: fixed;
+  z-index: 200;
+  min-width: 220px;
+  max-width: 320px;
+  padding: 6px;
+  border: 1px solid var(--rp-line, #e8e8ec);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(16, 16, 26, 0.14), 0 2px 6px rgba(16, 16, 26, 0.06);
+  font-family: inherit;
+  font-size: 14px;
+  color: #16161a;
+  animation: rp-pop-in 0.12s ease-out;
+}
+
+@keyframes rp-pop-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.rp-popover-search {
+  width: 100%;
+  height: 32px;
+  margin-bottom: 4px;
+  padding: 0 10px;
+  border: 1px solid #e8e8ec;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13.5px;
+}
+
+.rp-popover-search:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px #eef2ff;
+}
+
+.rp-popover-list {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.rp-option {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 9px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 13.5px;
+  color: #16161a;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rp-option:hover { background: #f5f5f7; }
+
+.rp-option-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rp-option-check {
+  flex-shrink: 0;
+  color: #4f46e5;
+  opacity: 0;
+}
+
+.rp-option[aria-selected="true"] .rp-option-check,
+.rp-option[aria-checked="true"] .rp-option-check { opacity: 1; }
+
+.rp-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  border: 1.5px solid #d3d3da;
+  border-radius: 5px;
+  color: transparent;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.rp-option[aria-checked="true"] .rp-checkbox {
+  background: #4f46e5;
+  border-color: #4f46e5;
+  color: #fff;
+}
+
+.rp-popover-empty {
+  padding: 12px 10px;
+  font-size: 13px;
+  color: #9a9aa5;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .rp-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .rp-header .rp-btn { width: 100%; }
+  .rp-card { border-radius: 12px; }
+  .rp-popover { max-width: calc(100vw - 24px); }
+}
+
+/* Reparto — aviso de error de guardado/lectura */
+.rp-error {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 13.5px;
+  line-height: 20px;
+}
+
+/* Reparto — variantes de botón */
+.rp-btn--ghost {
+  background: #fff;
+  border-color: var(--rp-line);
+  color: var(--rp-ink);
+}
+
+.rp-btn--ghost:hover { background: var(--rp-hover); }
+
+.rp-btn--danger {
+  background: #fff;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.rp-btn--danger:hover { background: #fef2f2; }
+
+.rp-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.rp-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--rp-ink-faint);
+  cursor: pointer;
+}
+
+.rp-icon-btn:hover { background: var(--rp-line-soft); color: var(--rp-ink); }
+
+/* Reparto — disparador enmarcado (campos del modal) */
+.rp-trigger--boxed {
+  min-height: 40px;
+  padding: 6px 12px;
+  border-color: var(--rp-line);
+  background: #fff;
+}
+
+.rp-trigger--boxed .rp-trigger-chevron { opacity: 1; }
+
+/* Reparto — modal */
+.rp-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.rp-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(16, 16, 26, 0.42);
+  animation: rp-fade-in 0.15s ease-out;
+}
+
+.rp-modal-dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 48px);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 24px 64px rgba(16, 16, 26, 0.24);
+  animation: rp-modal-in 0.16s cubic-bezier(0.2, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+@keyframes rp-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes rp-modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+.rp-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 16px 14px 22px;
+  border-bottom: 1px solid var(--rp-line-soft);
+}
+
+.rp-modal-header h2 {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 620;
+  letter-spacing: -0.015em;
+  color: var(--rp-ink);
+}
+
+.rp-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 22px;
+  overflow-y: auto;
+}
+
+.rp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rp-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rp-ink-faint);
+}
+
+.rp-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 22px 18px;
+  border-top: 1px solid var(--rp-line-soft);
+}
+
+.rp-modal-footer-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+body.rp-modal-open { overflow: hidden; }
+
+@media (max-width: 600px) {
+  .rp-modal { padding: 0; align-items: flex-end; }
+
+  .rp-modal-dialog {
+    max-width: none;
+    max-height: 92vh;
+    border-radius: 18px 18px 0 0;
+    animation: rp-sheet-in 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+  }
+
+  @keyframes rp-sheet-in {
+    from { transform: translateY(100%); }
+    to   { transform: none; }
+  }
+
+  .rp-modal-footer { padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+}
+
+/* Reparto — campo con control apilado (selector + entrada libre) */
+.rp-field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Reparto — botón "Ver" de instrucciones */
+.rp-instr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--rp-line);
+  border-radius: 999px;
+  background: #fff;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--rp-ink-soft);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.rp-instr-btn:hover {
+  background: var(--rp-accent-soft);
+  border-color: #c7d2fe;
+  color: #3730a3;
+}
+
+.rp-instr-btn:focus-visible {
+  outline: 2px solid var(--rp-accent);
+  outline-offset: 1px;
+}
+
+/* Reparto — editor de instrucciones (Quill snow dentro del modal) */
+.rp-editor {
+  border: 1px solid var(--rp-line);
+  border-radius: 9px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.rp-editor:focus-within {
+  border-color: var(--rp-accent);
+  box-shadow: 0 0 0 3px var(--rp-accent-soft);
+}
+
+.rp-editor .ql-toolbar.ql-snow {
+  border: none;
+  border-bottom: 1px solid var(--rp-line-soft);
+  padding: 6px 8px;
+  background: #fbfbfc;
+}
+
+.rp-editor .ql-container.ql-snow {
+  border: none;
+  height: auto;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.rp-editor .ql-editor {
+  min-height: 120px;
+  max-height: 220px;
+  padding: 10px 12px;
+  line-height: 21px;
+}
+
+.rp-editor .ql-editor.ql-blank::before {
+  left: 12px;
+  right: 12px;
+  font-style: normal;
+  color: var(--rp-ink-faint);
+}
+
+/* Reparto — lector de instrucciones */
+.rp-modal-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rp-ink-faint);
+  margin-bottom: 2px;
+}
+
+.rp-modal-body--reader { padding: 8px 10px 20px; }
+
+.rp-reader .ql-editor {
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  line-height: 22px;
+  color: var(--rp-ink);
+}
+
+.rp-reader .ql-editor ol,
+.rp-reader .ql-editor ul { padding-left: 4px; }
+
+/* Quill convierte el propio #rp-view-content en el contenedor: sin espacio.
+   height:auto anula el 100% del core, que aquí estiraría el modal. */
+.rp-reader.ql-container {
+  border: none;
+  height: auto;
+  font-family: inherit;
+}
+
+/* Reparto — secciones (una tabla por sección) */
+.rp-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.rp-group-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-left: 2px;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+  color: var(--rp-ink);
+}
+
+.rp-group-count {
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--rp-ink-faint);
+}
+
+/* Opción de acción del desplegable ("Nueva sección…") */
+.rp-option--action {
+  margin-top: 4px;
+  border-top: 1px solid var(--rp-line-soft);
+  border-radius: 0 0 8px 8px;
+  padding-top: 9px;
+  color: var(--rp-accent);
+  font-weight: 550;
+}
+
+/* Reparto — menú y renombrado de sección */
+.rp-group-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-left: 2px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--rp-ink-faint);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.rp-group-menu:hover,
+.rp-group-menu[aria-expanded="true"] {
+  background: var(--rp-line-soft);
+  color: var(--rp-ink);
+}
+
+.rp-group-menu:focus-visible {
+  outline: 2px solid var(--rp-accent);
+  outline-offset: 1px;
+}
+
+.rp-group-rename {
+  width: 100%;
+  max-width: 320px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--rp-accent);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 620;
+  color: var(--rp-ink);
+  box-shadow: 0 0 0 3px var(--rp-accent-soft);
+}
+
+.rp-group-rename:focus { outline: none; }
+
+.rp-option--disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.rp-option--disabled:hover { background: transparent; }
+
+/* Reparto — arrastrar cabeceras de sección */
+.rp-group-title {
+  cursor: grab;
+  user-select: none;
+}
+
+.rp-group-title:active { cursor: grabbing; }
+
+.rp-group-grip {
+  color: var(--rp-ink-faint);
+  font-size: 14px;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.rp-group:hover .rp-group-grip { color: var(--rp-ink-soft); }
+
+.rp-group--dragging {
+  opacity: 0.55;
+}
+
+.rp-group--dragging .rp-card {
+  border-color: var(--rp-accent);
+}
+
+/* El campo de renombrar debe poder seleccionarse aunque el título no */
+.rp-group-rename { user-select: text; cursor: text; }
+
+/* Reparto — arrastrar filas dentro de su tabla */
+.rp-cell-grip {
+  padding-left: 6px !important;
+  padding-right: 0 !important;
+}
+
+.rp-row-grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  color: #d0d0d8;
+  font-size: 13px;
+  line-height: 1;
+  cursor: grab;
+  transition: color 0.15s ease;
+}
+
+.rp-row-grip:active { cursor: grabbing; }
+
+.rp-table tbody tr:hover .rp-row-grip,
+.rp-table tbody tr:focus-visible .rp-row-grip { color: var(--rp-ink-faint); }
+
+.rp-row--dragging {
+  opacity: 0.5;
+  background: var(--rp-accent-soft) !important;
+}
+
+/* En táctil no hay arrastre nativo: el asa solo estorbaría */
+@media (max-width: 600px) {
+  .rp-col-grip,
+  .rp-cell-grip,
+  .rp-group-grip { display: none; }
+}
+
+/* Reparto — pestañas */
+.rp-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 18px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--rp-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.rp-tabs::-webkit-scrollbar { display: none; }
+
+.rp-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 0 2px 0 0;
+  border-radius: 9px 9px 0 0;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+}
+
+.rp-tab--active {
+  border-bottom-color: var(--rp-ink);
+}
+
+.rp-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--rp-ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.rp-tab-btn:hover { background: var(--rp-hover); color: var(--rp-ink); }
+
+.rp-tab--active .rp-tab-btn { color: var(--rp-ink); }
+
+.rp-tab-btn:focus-visible {
+  outline: 2px solid var(--rp-accent);
+  outline-offset: -2px;
+}
+
+.rp-tab-count {
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--rp-line-soft);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--rp-ink-faint);
+  text-align: center;
+}
+
+.rp-tab--active .rp-tab-count {
+  background: var(--rp-accent-soft);
+  color: #3730a3;
+}
+
+.rp-tab-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--rp-ink-faint);
+  cursor: pointer;
+}
+
+.rp-tab-menu:hover,
+.rp-tab-menu[aria-expanded="true"] {
+  background: var(--rp-line-soft);
+  color: var(--rp-ink);
+}
+
+.rp-tab-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  margin-left: 4px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 19px;
+  line-height: 1;
+  color: var(--rp-ink-faint);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.rp-tab-add:hover { background: var(--rp-line-soft); color: var(--rp-ink); }
+
+.rp-tab-rename {
+  width: 170px;
+  height: 32px;
+  margin: 3px 2px;
+  padding: 0 8px;
+  border: 1px solid var(--rp-accent);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--rp-ink);
+  box-shadow: 0 0 0 3px var(--rp-accent-soft);
+}
+
+.rp-tab-rename:focus { outline: none; }
+
+.rp-panel-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  .rp-panel-toolbar .rp-btn { width: 100%; }
+}
+
+/* Reparto — pestaña en creación (solo contiene el campo de nombre) */
+.rp-tab--new { padding: 0; }
+
+/* Reparto — arrastrar pestañas */
+.rp-tab {
+  cursor: grab;
+  user-select: none;
+}
+
+.rp-tab:active { cursor: grabbing; }
+
+.rp-tab--dragging {
+  opacity: 0.5;
+  background: var(--rp-accent-soft);
+}
+
+/* El campo de renombrar debe poder seleccionarse aunque la pestaña no */
+.rp-tab-rename { user-select: text; cursor: text; }
+
+/* Reparto — pestaña fija de resumen */
+.rp-tab--fixed {
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.rp-tab--fixed .rp-tab-btn { font-weight: 600; }
+
+.rp-tab-rename--invalid {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px #fee2e2;
+}
+
+.rp-summary-card { padding: 24px 26px 26px; }
+
+.rp-summary-head h2 {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 620;
+  letter-spacing: -0.015em;
+  color: var(--rp-ink);
+}
+
+.rp-summary-head p {
+  margin-top: 3px;
+  font-size: 13.5px;
+  color: var(--rp-ink-soft);
+}
+
+.rp-summary-body {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+
+.rp-donut {
+  width: 176px;
+  height: 176px;
+  flex-shrink: 0;
+}
+
+.rp-donut-total {
+  font-size: 30px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  fill: var(--rp-ink);
+}
+
+.rp-donut-label {
+  font-size: 12px;
+  font-weight: 500;
+  fill: var(--rp-ink-faint);
+}
+
+.rp-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 240px;
+  flex: 1;
+}
+
+.rp-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rp-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.rp-legend-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--rp-ink);
+}
+
+.rp-legend-detail {
+  font-size: 12.5px;
+  color: var(--rp-ink-faint);
+}
+
+.rp-legend-pct {
+  margin-left: auto;
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--rp-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.rp-legend-note {
+  padding-top: 12px;
+  border-top: 1px solid var(--rp-line-soft);
+  font-size: 12.5px;
+  line-height: 18px;
+  color: var(--rp-ink-soft);
+}
+
+@media (max-width: 600px) {
+  .rp-summary-body {
+    gap: 24px;
+    justify-content: center;
+  }
+
+  .rp-legend { min-width: 0; width: 100%; }
+}
+
+/* ==========================================================================
+   Convivencia — reutiliza la UI de Reparto (.rp); aquí solo lo propio
+   ========================================================================== */
+
+.cv-table { min-width: 0; }
+.cv-col-title  { width: 65%; }
+.cv-col-room   { width: 35%; }
+
+/* Las secciones de Convivencia son fijas (una por estado): no se arrastran */
+.cv .rp-group-title,
+.cv .rp-group-title:active { cursor: default; align-items: center; }
+
+.cv-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--rp-ink, #16161a);
+}
+
+.cv-status-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--cv-status-color, #9a9aa5);
+}
+
+/* ==========================================================================
+   Materiales — reutiliza la UI de Convivencia (.rp .cv); aquí solo lo propio
+   ========================================================================== */
+
+.mat-col-name { width: 45%; }
+.mat-col-uses { width: 55%; }
+
+.mat .rp-cell-freq {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Mención de un material dentro de la descripción de una tarea */
+.ql-editor .mention {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: #ececf0;
+  color: #4a4a55;
+  font-weight: 500;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+.ql-editor .mention[data-tipo="consumible"] {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.ql-editor .mention.mention--missing {
+  background: #f1f1f4;
+  color: #9a9aa5;
+  text-decoration: line-through;
+}
+
+/* Desplegable de «@» en el editor de descripción */
+.mention-menu {
+  position: absolute;
+  z-index: 50;
+  min-width: 220px;
+  max-width: calc(100% - 8px);
+  padding: 4px;
+  border: 1px solid #e8e8ec;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(22, 22, 26, 0.12);
+}
+
+.mention-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: #16161a;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mention-option--active,
+.mention-option:hover { background: #f1f1f4; }
+
+.mention-option-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--mat-color, #9a9aa5);
+}
+
+.mention-option-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mention-option-type {
+  flex-shrink: 0;
+  color: #9a9aa5;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   Descripción ampliada (modal) — el editor del panel se mueve aquí dentro
+   ========================================================================== */
+
+.desc-expand-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.desc-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.desc-expand-btn:hover { background: #f1f1f4; color: #1c1c1c; }
+
+.desc-modal { z-index: 160; }
+
+.desc-modal-dialog {
+  max-width: 880px;
+  height: calc(100vh - 96px);
+  max-height: 900px;
+}
+
+.desc-modal-slot {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 32px 32px;
+  cursor: text;
+}
+
+.desc-modal-slot #description-editor {
+  min-height: 100%;
+}
+
+.desc-modal-slot #description-editor .ql-editor {
+  min-height: 100%;
+}
+
+@media (max-width: 600px) {
+  .desc-modal-dialog {
+    height: 92vh;
+    max-height: 92vh;
+  }
+
+  .desc-modal-slot { padding: 20px; }
 }

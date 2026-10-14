@@ -9,6 +9,8 @@
   <link rel="apple-touch-icon" href="favicon.svg" />
   <link rel="stylesheet" href="styles.css" />
   <link href="https://cdn.quilljs.com/1.3.7/quill.bubble.css" rel="stylesheet" />
+  <!-- Tema snow: solo lo usa el editor de Instrucciones de Reparto (barra siempre visible) -->
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
 </head>
 <body>
 
@@ -60,6 +62,34 @@
           <path d="M2.5 8.33337H17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         Planificadas
+        <span class="nav-count"></span>
+      </button>
+      <button class="nav-item nav-item--other" data-view="reparto">
+        <svg class="nav-item--other-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 6.66663C16.1506 6.66663 17.0833 5.73389 17.0833 4.58329C17.0833 3.4327 16.1506 2.49996 15 2.49996C13.8494 2.49996 12.9167 3.4327 12.9167 4.58329C12.9167 5.73389 13.8494 6.66663 15 6.66663Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M15 17.5C16.1506 17.5 17.0833 16.5672 17.0833 15.4166C17.0833 14.266 16.1506 13.3333 15 13.3333C13.8494 13.3333 12.9167 14.266 12.9167 15.4166C12.9167 16.5672 13.8494 17.5 15 17.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M5 12.0833C6.15059 12.0833 7.08333 11.1506 7.08333 9.99996C7.08333 8.84937 6.15059 7.91663 5 7.91663C3.84941 7.91663 2.91667 8.84937 2.91667 9.99996C2.91667 11.1506 3.84941 12.0833 5 12.0833Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6.80005 8.95829L13.2084 5.62496" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6.80005 11.0417L13.2084 14.375" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Reparto
+        <span class="nav-count"></span>
+      </button>
+      <button class="nav-item nav-item--other" data-view="convivencia">
+        <svg class="nav-item--other-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2.5 7.5L10 1.66663L17.5 7.5V16.6666C17.5 17.1087 17.3244 17.5326 17.0118 17.8451C16.6993 18.1577 16.2754 18.3333 15.8333 18.3333H4.16667C3.72464 18.3333 3.30072 18.1577 2.98816 17.8451C2.67559 17.5326 2.5 17.1087 2.5 16.6666V7.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7.5 18.3333V10H12.5V18.3333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Convivencia
+        <span class="nav-count"></span>
+      </button>
+      <button class="nav-item nav-item--other" data-view="materiales">
+        <svg class="nav-item--other-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.5 13.3333V6.66663C17.4997 6.37435 17.4225 6.08727 17.2763 5.83422C17.13 5.58117 16.9198 5.37103 16.6667 5.22496L10.8333 1.89163C10.58 1.74535 10.2926 1.66833 10 1.66833C9.70744 1.66833 9.42003 1.74535 9.16667 1.89163L3.33333 5.22496C3.08022 5.37103 2.86998 5.58117 2.72372 5.83422C2.57745 6.08727 2.5003 6.37435 2.5 6.66663V13.3333C2.5003 13.6256 2.57745 13.9126 2.72372 14.1657C2.86998 14.4187 3.08022 14.6289 3.33333 14.775L9.16667 18.1083C9.42003 18.2546 9.70744 18.3316 10 18.3316C10.2926 18.3316 10.58 18.2546 10.8333 18.1083L16.6667 14.775C16.9198 14.6289 17.13 14.4187 17.2763 14.1657C17.4225 13.9126 17.4997 13.6256 17.5 13.3333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2.72498 5.80005L9.99998 10.0084L17.275 5.80005" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10 18.4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Materiales
         <span class="nav-count"></span>
       </button>
       <button id="logout-btn" class="logout-btn">
@@ -131,6 +161,7 @@
           <button id="new-plan-btn">+ Nueva tarea</button>
         </header>
 
+        <div class="plan-toolbar">
         <div class="plan-tabs" id="plan-tabs">
           <button class="plan-tab plan-tab--active" data-filter="all">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -141,9 +172,24 @@
             </svg>
             Todo
           </button>
-          <button class="plan-tab" data-filter="hogar">Hogar</button>
-          <button class="plan-tab" data-filter="personal">Personal</button>
-          <button class="plan-tab" data-filter="salud">Salud</button>
+          <button class="plan-tab" data-filter="weekly">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.25"/>
+              <path d="M2 6.5H14M5.33333 1.5V4M10.6667 1.5V4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+            </svg>
+            Semanalmente
+          </button>
+        </div>
+
+        <div class="plan-filters">
+          <select id="plan-filter-owner" class="plan-filter" aria-label="Filtrar por responsable">
+            <option value="">Responsable: todos</option>
+          </select>
+          <select id="plan-filter-category" class="plan-filter" aria-label="Filtrar por categoría">
+            <option value="">Categoría: todas</option>
+          </select>
+          <button type="button" id="plan-filter-clear" class="plan-filter-clear" hidden>Limpiar filtros</button>
+        </div>
         </div>
 
         <div id="detail-task-list-wrapper">
@@ -166,6 +212,375 @@
               <p>No hay tareas planificadas todavía.</p>
             </div>
           </div>
+
+        <div id="plan-week-board" class="plan-week-board" hidden></div>
+      </div>
+
+      <!-- Vista: Reparto -->
+      <div id="view-reparto" class="view" hidden>
+        <div class="rp">
+          <header class="rp-header">
+            <div class="rp-heading">
+              <h1>Reparto</h1>
+              <p>Quién se encarga de qué, con qué frecuencia y dentro de qué rutina.</p>
+            </div>
+          </header>
+
+          <p id="rp-error" class="rp-error" hidden></p>
+
+          <!-- Barra de pestañas; su contenido se genera en renderRepartoTabs() -->
+          <div class="rp-tabs" id="rp-tabs" role="tablist"></div>
+
+          <!-- Panel de la pestaña fija «General» -->
+          <div id="rp-summary" class="rp-summary" hidden></div>
+
+          <div class="rp-panel-toolbar" id="rp-toolbar">
+            <button type="button" id="rp-add-btn" class="rp-btn rp-btn--primary">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 3.33337V12.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3.33333 8H12.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Añadir fila
+            </button>
+          </div>
+
+          <!-- Una tabla por sección; se generan desde la plantilla de abajo -->
+          <div id="rp-groups" class="rp-groups"></div>
+
+          <template id="rp-group-template">
+            <section class="rp-group">
+              <h2 class="rp-group-title" draggable="true" title="Arrastra para reordenar la sección">
+                <span class="rp-group-grip" aria-hidden="true">⠿</span>
+                <span class="rp-group-name"></span>
+                <span class="rp-group-count"></span>
+                <button type="button" class="rp-group-menu" aria-label="Opciones de la sección" aria-haspopup="menu" aria-expanded="false">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 8.67a.67.67 0 1 0 0-1.34.67.67 0 0 0 0 1.34Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12.67 8.67a.67.67 0 1 0 0-1.34.67.67 0 0 0 0 1.34Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3.33 8.67a.67.67 0 1 0 0-1.34.67.67 0 0 0 0 1.34Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </h2>
+              <div class="rp-card">
+                <div class="rp-scroll">
+                  <table class="rp-table">
+                    <thead>
+                      <tr>
+                        <th class="rp-col-grip"><span class="rp-visually-hidden">Reordenar</span></th>
+                        <th class="rp-col-task">Tarea</th>
+                        <th class="rp-col-instructions">Instrucciones</th>
+                        <th class="rp-col-owner">Responsable</th>
+                        <th class="rp-col-freq">Frecuencia</th>
+                        <th class="rp-col-routine">Rutina</th>
+                        <th class="rp-col-duplicate"><span class="rp-visually-hidden">Duplicar</span></th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          </template>
+
+          <div class="rp-card" id="rp-empty-card" hidden>
+            <div id="rp-empty" class="rp-empty">
+              <div class="rp-empty-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 6.65685 16.3431 8 18 8Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M18 22C19.6569 22 21 20.6569 21 19C21 17.3431 19.6569 16 18 16C16.3431 16 15 17.3431 15 19C15 20.6569 16.3431 22 18 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M6 15C7.65685 15 9 13.6569 9 12C9 10.3431 7.65685 9 6 9C4.34315 9 3 10.3431 3 12C3 13.6569 4.34315 15 6 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M8.59 10.51L15.42 6.49" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M8.59 13.51L15.42 17.49" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <p class="rp-empty-title">Todavía no hay nada repartido</p>
+              <p class="rp-empty-text">Añade una fila para asignar una tarea a alguien.</p>
+              <button type="button" id="rp-empty-add" class="rp-btn rp-btn--primary">Añadir la primera fila</button>
+            </div>
+          </div>
+
+          <!-- Modal de edición de fila -->
+          <div id="rp-modal" class="rp-modal" hidden>
+            <div class="rp-modal-backdrop" id="rp-modal-backdrop"></div>
+            <div class="rp-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="rp-modal-title">
+              <header class="rp-modal-header">
+                <h2 id="rp-modal-title">Nueva fila</h2>
+                <button type="button" id="rp-modal-close" class="rp-icon-btn" aria-label="Cerrar">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M4 4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </header>
+
+              <div class="rp-modal-body">
+                <div class="rp-field">
+                  <label class="rp-label" for="rp-modal-task">Tarea</label>
+                  <input type="text" id="rp-modal-task" class="rp-field-input" maxlength="200" placeholder="Escribe una tarea…" autocomplete="off" />
+                </div>
+                <div class="rp-field">
+                  <span class="rp-label">Pestaña</span>
+                  <div id="rp-modal-tab"></div>
+                </div>
+                <div class="rp-field">
+                  <span class="rp-label">Sección</span>
+                  <div id="rp-modal-section" class="rp-field-stack"></div>
+                </div>
+                <div class="rp-field">
+                  <span class="rp-label">Responsable</span>
+                  <div id="rp-modal-owner"></div>
+                </div>
+                <div class="rp-field">
+                  <span class="rp-label">Frecuencia</span>
+                  <div id="rp-modal-freq" class="rp-field-stack"></div>
+                </div>
+                <div class="rp-field">
+                  <span class="rp-label">Rutina</span>
+                  <div id="rp-modal-routine"></div>
+                </div>
+                <div class="rp-field">
+                  <span class="rp-label">Instrucciones</span>
+                  <div class="rp-editor">
+                    <div id="rp-modal-instructions"></div>
+                  </div>
+                </div>
+              </div>
+
+              <footer class="rp-modal-footer">
+                <button type="button" id="rp-modal-delete" class="rp-btn rp-btn--danger">Eliminar</button>
+                <div class="rp-modal-footer-actions">
+                  <button type="button" id="rp-modal-cancel" class="rp-btn rp-btn--ghost">Cancelar</button>
+                  <button type="button" id="rp-modal-save" class="rp-btn rp-btn--primary">Guardar</button>
+                </div>
+              </footer>
+            </div>
+          </div>
+
+          <!-- Modal de lectura de instrucciones -->
+          <div id="rp-view-modal" class="rp-modal" hidden>
+            <div class="rp-modal-backdrop" id="rp-view-backdrop"></div>
+            <div class="rp-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="rp-view-title">
+              <header class="rp-modal-header">
+                <div>
+                  <p class="rp-modal-eyebrow">Instrucciones</p>
+                  <h2 id="rp-view-title"></h2>
+                </div>
+                <button type="button" id="rp-view-close" class="rp-icon-btn" aria-label="Cerrar">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M4 4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </header>
+              <div class="rp-modal-body rp-modal-body--reader">
+                <div id="rp-view-content" class="rp-reader"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista: Convivencia (reutiliza los tokens y la tarjeta de Reparto) -->
+      <div id="view-convivencia" class="view" hidden>
+        <div class="rp cv">
+          <header class="rp-header">
+            <div class="rp-heading">
+              <h1>Convivencia</h1>
+              <p>Temas de la casa y en qué punto están.</p>
+            </div>
+          </header>
+
+          <p id="cv-error" class="rp-error" hidden></p>
+
+          <div class="rp-panel-toolbar">
+            <button type="button" id="cv-add-btn" class="rp-btn rp-btn--primary">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 3.33337V12.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3.33333 8H12.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Añadir fila
+            </button>
+          </div>
+
+          <!-- Una tabla por estado; se generan desde la plantilla de abajo -->
+          <div id="cv-groups" class="rp-groups"></div>
+
+          <template id="cv-group-template">
+            <section class="rp-group">
+              <h2 class="rp-group-title">
+                <span class="cv-status-dot"></span>
+                <span class="rp-group-name"></span>
+                <span class="rp-group-count"></span>
+              </h2>
+              <div class="rp-card">
+                <div class="rp-scroll">
+                  <table class="rp-table cv-table">
+                    <thead>
+                      <tr>
+                        <th class="cv-col-title">Título</th>
+                        <th class="cv-col-room">Estancia</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          </template>
+
+          <div class="rp-card" id="cv-empty-card" hidden>
+            <div class="rp-empty">
+              <div class="rp-empty-icon">
+                <svg width="28" height="28" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2.5 7.5L10 1.66663L17.5 7.5V16.6666C17.5 17.1087 17.3244 17.5326 17.0118 17.8451C16.6993 18.1577 16.2754 18.3333 15.8333 18.3333H4.16667C3.72464 18.3333 3.30072 18.1577 2.98816 17.8451C2.67559 17.5326 2.5 17.1087 2.5 16.6666V7.5Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M7.5 18.3333V10H12.5V18.3333" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <p class="rp-empty-title">Todavía no hay temas de convivencia</p>
+              <p class="rp-empty-text">Añade una fila para empezar a seguir un tema.</p>
+              <button type="button" id="cv-empty-add" class="rp-btn rp-btn--primary">Añadir la primera fila</button>
+            </div>
+          </div>
+
+          <!-- Modal de edición de fila -->
+          <div id="cv-modal" class="rp-modal" hidden>
+            <div class="rp-modal-backdrop" id="cv-modal-backdrop"></div>
+            <div class="rp-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="cv-modal-title">
+              <header class="rp-modal-header">
+                <h2 id="cv-modal-title">Nueva fila</h2>
+                <button type="button" id="cv-modal-close" class="rp-icon-btn" aria-label="Cerrar">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M4 4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </header>
+
+              <div class="rp-modal-body">
+                <div class="rp-field">
+                  <label class="rp-label" for="cv-modal-title-input">Título</label>
+                  <input type="text" id="cv-modal-title-input" class="rp-field-input" maxlength="200" placeholder="Escribe un título…" autocomplete="off" />
+                </div>
+                <div class="rp-field">
+                  <span class="rp-label">Estancia</span>
+                  <div id="cv-modal-room"></div>
+                </div>
+                <div class="rp-field">
+                  <span class="rp-label">Estado</span>
+                  <div id="cv-modal-status"></div>
+                </div>
+              </div>
+
+              <footer class="rp-modal-footer">
+                <button type="button" id="cv-modal-delete" class="rp-btn rp-btn--danger">Eliminar</button>
+                <div class="rp-modal-footer-actions">
+                  <button type="button" id="cv-modal-cancel" class="rp-btn rp-btn--ghost">Cancelar</button>
+                  <button type="button" id="cv-modal-save" class="rp-btn rp-btn--primary">Guardar</button>
+                </div>
+              </footer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista: Materiales (reutiliza la UI de Convivencia/Reparto) -->
+      <div id="view-materiales" class="view" hidden>
+        <div class="rp cv mat">
+          <header class="rp-header">
+            <div class="rp-heading">
+              <h1>Materiales</h1>
+              <p>Utensilios y consumibles. Menciónalos con «@» en la descripción de una tarea planificada.</p>
+            </div>
+          </header>
+
+          <p id="mat-error" class="rp-error" hidden></p>
+
+          <div class="rp-panel-toolbar">
+            <button type="button" id="mat-add-btn" class="rp-btn rp-btn--primary">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 3.33337V12.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3.33333 8H12.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Añadir material
+            </button>
+          </div>
+
+          <!-- Una tabla por tipo; se generan desde la plantilla de abajo -->
+          <div id="mat-groups" class="rp-groups"></div>
+
+          <template id="mat-group-template">
+            <section class="rp-group">
+              <h2 class="rp-group-title">
+                <span class="cv-status-dot"></span>
+                <span class="rp-group-name"></span>
+                <span class="rp-group-count"></span>
+              </h2>
+              <div class="rp-card">
+                <div class="rp-scroll">
+                  <table class="rp-table cv-table">
+                    <thead>
+                      <tr>
+                        <th class="mat-col-name">Nombre</th>
+                        <th class="mat-col-uses">Se usa en</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          </template>
+
+          <div class="rp-card" id="mat-empty-card" hidden>
+            <div class="rp-empty">
+              <div class="rp-empty-icon">
+                <svg width="28" height="28" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.5 13.3333V6.66663C17.4997 6.37435 17.4225 6.08727 17.2763 5.83422C17.13 5.58117 16.9198 5.37103 16.6667 5.22496L10.8333 1.89163C10.58 1.74535 10.2926 1.66833 10 1.66833C9.70744 1.66833 9.42003 1.74535 9.16667 1.89163L3.33333 5.22496C3.08022 5.37103 2.86998 5.58117 2.72372 5.83422C2.57745 6.08727 2.5003 6.37435 2.5 6.66663V13.3333C2.5003 13.6256 2.57745 13.9126 2.72372 14.1657C2.86998 14.4187 3.08022 14.6289 3.33333 14.775L9.16667 18.1083C9.42003 18.2546 9.70744 18.3316 10 18.3316C10.2926 18.3316 10.58 18.2546 10.8333 18.1083L16.6667 14.775C16.9198 14.6289 17.13 14.4187 17.2763 14.1657C17.4225 13.9126 17.4997 13.6256 17.5 13.3333Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M2.72498 5.80005L9.99998 10.0084L17.275 5.80005" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M10 18.4V10" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <p class="rp-empty-title">Todavía no hay materiales</p>
+              <p class="rp-empty-text">Añade utensilios y consumibles para poder mencionarlos en las tareas.</p>
+              <button type="button" id="mat-empty-add" class="rp-btn rp-btn--primary">Añadir el primer material</button>
+            </div>
+          </div>
+
+          <!-- Modal de edición de material -->
+          <div id="mat-modal" class="rp-modal" hidden>
+            <div class="rp-modal-backdrop" id="mat-modal-backdrop"></div>
+            <div class="rp-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="mat-modal-title">
+              <header class="rp-modal-header">
+                <h2 id="mat-modal-title">Nuevo material</h2>
+                <button type="button" id="mat-modal-close" class="rp-icon-btn" aria-label="Cerrar">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M4 4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </header>
+
+              <div class="rp-modal-body">
+                <div class="rp-field">
+                  <label class="rp-label" for="mat-modal-name">Nombre</label>
+                  <input type="text" id="mat-modal-name" class="rp-field-input" maxlength="80" placeholder="Ej.: Bayeta de microfibra" autocomplete="off" />
+                </div>
+                <div class="rp-field">
+                  <span class="rp-label">Tipo</span>
+                  <div id="mat-modal-type"></div>
+                </div>
+              </div>
+
+              <footer class="rp-modal-footer">
+                <button type="button" id="mat-modal-delete" class="rp-btn rp-btn--danger">Eliminar</button>
+                <div class="rp-modal-footer-actions">
+                  <button type="button" id="mat-modal-cancel" class="rp-btn rp-btn--ghost">Cancelar</button>
+                  <button type="button" id="mat-modal-save" class="rp-btn rp-btn--primary">Guardar</button>
+                </div>
+              </footer>
+            </div>
+          </div>
+        </div>
       </div>
 
     </main>
@@ -282,14 +697,7 @@
           </div>
           <div class="field-group">
             <label for="edit-category">Categoría</label>
-            <div class="select-color-wrap">
-              <span id="edit-category-dot" class="category-dot"></span>
-              <select id="edit-category">
-                <option value="hogar">Hogar</option>
-                <option value="personal">Personal</option>
-                <option value="salud">Salud</option>
-              </select>
-            </div>
+            <select id="edit-category"></select>
           </div>
           <div class="field-group">
             <label for="edit-owner">Responsable</label>
@@ -339,14 +747,48 @@
             <div id="edit-linked-tasks-list" class="linked-tasks-list"></div>
           </div>
           <hr class="edit-panel-divider">
-          <div class="field-group">
+          <div class="field-group" id="description-home">
             <label hidden>Descripción</label>
+            <div class="desc-expand-row">
+              <button type="button" id="desc-expand-btn" class="desc-expand-btn" aria-label="Ampliar descripción">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 2H14V6" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M6 14H2V10" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M14 2L9.33333 6.66667" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M2 14L6.66667 9.33333" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Ampliar
+              </button>
+            </div>
             <div id="description-editor"></div>
           </div>
         </form>
       </div>
     </aside>
 
+  </div>
+
+  <!-- Modal ampliado de la descripción: al abrirse, el editor del panel de
+       edición se mueve dentro de #desc-modal-slot y vuelve al cerrarse. -->
+  <div class="rp">
+    <div id="desc-modal" class="rp-modal desc-modal" hidden>
+      <div class="rp-modal-backdrop" id="desc-modal-backdrop"></div>
+      <div class="rp-modal-dialog desc-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="desc-modal-title">
+        <header class="rp-modal-header">
+          <div>
+            <p class="rp-modal-eyebrow">Descripción</p>
+            <h2 id="desc-modal-title"></h2>
+          </div>
+          <button type="button" id="desc-modal-close" class="rp-icon-btn" aria-label="Cerrar">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M4 4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </header>
+        <div id="desc-modal-slot" class="desc-modal-slot"></div>
+      </div>
+    </div>
   </div>
 
   <!-- Modal nueva tarea planificada -->
@@ -367,14 +809,7 @@
         </div>
         <div class="field-group">
           <label for="detail-category">Categoría</label>
-          <div class="select-color-wrap">
-            <span id="category-dot" class="category-dot"></span>
-            <select id="detail-category">
-              <option value="hogar">Hogar</option>
-              <option value="personal">Personal</option>
-              <option value="salud">Salud</option>
-            </select>
-          </div>
+          <select id="detail-category"></select>
         </div>
         <div class="field-group">
           <label for="detail-owner">Responsable</label>
